@@ -12,25 +12,33 @@ suite "Hierarchical Spatial Hash Grid Tests":
 
   let rock = obj("Rock", x = 5, y = 5, width = 3, height = 3)
   let tree = obj("Tree", x = 20, y = 20, width = 15, height = 15)
+  let bush = obj("Bush", x = 100, y = 100, width = 5, height = 5)
 
   test "Insertion and Query":
     var grid = newSpacialIndex[GameObject]()
 
     grid.add(rock)
     grid.add(tree)
+    grid.add(bush)
 
-    check(grid.find(5, 5, 2).toSeq.mapIt(it.name) == @[ "Rock" ])
+    check(grid.find(0, 0, 1).toSeq.len == 0)
 
-    # check found, "Rock should be found within query range"
+    check(grid.find(5, 5, 1).toSeq.mapIt(it.name) == @[ "Rock" ])
 
-#   test "Removal":
-#     let bush = GameObject(name: "Bush", pos: (10.0, 10.0), size: (2.0, 2.0))
-#     grid.insert(bush)
-# 
-#     check len(toSeq(grid.query((10.0, 10.0), radius = 5.0))) == 1
-#     grid.remove(bush)
-#     check len(toSeq(grid.query((10.0, 10.0), radius = 5.0))) == 0, "Bush should be removed"
-# 
+    check(grid.find(6, 6, 2).toSeq.mapIt(it.name) == @[ "Rock" ])
+
+    check(grid.find(15, 15, 10).toSeq.mapIt(it.name) == @[ "Rock", "Tree" ])
+
+  test "Removal":
+    var grid = newSpacialIndex[GameObject]()
+    grid.add(rock)
+
+    check(grid.find(5, 5, 1).toSeq.len == 1)
+    grid.remove(rock)
+    check(grid.find(5, 5, 1).toSeq.len == 0)
+    grid.remove(rock)
+    check(grid.find(5, 5, 1).toSeq.len == 0)
+
 #   test "Clear":
 #     let rock = GameObject(name: "Rock", pos: (5.0, 5.0), size: (3.0, 3.0))
 #     let tree = GameObject(name: "Tree", pos: (20.0, 20.0), size: (15.0, 15.0))

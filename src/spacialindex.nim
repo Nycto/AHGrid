@@ -98,3 +98,11 @@ iterator find*[T](grid: SpacialIndex[T]; x, y, radius: int32): T =
       if grid.cells.hasKey(key):
         for obj in grid.cells[key]:
           yield obj
+
+proc remove*[T](grid: var SpacialIndex[T]; obj: T) =
+  ## Removes a value
+  let key = obj.key
+  if grid.cells.hasKey(key):
+    let index = grid.cells[key].find(obj)
+    if index >= 0:
+      grid.cells[key].del(index)
