@@ -49,3 +49,14 @@ suite "Hierarchical Spatial Hash Grid Tests":
 
     grid.clear()
     check(grid.find(50, 50, 50).toSeq.len == 0)
+
+  test "ToString":
+    var grid = newSpacialIndex[GameObject]()
+
+    check($grid == "SpacialIndex()")
+
+    grid.add(rock)
+    grid.add(tree)
+    grid.add(bush)
+
+    check($grid == """SpacialIndex((x: 100, y: 100, scale: 8): @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], (x: 16, y: 16, scale: 32): @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], (x: 4, y: 4, scale: 8): @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], )""")
