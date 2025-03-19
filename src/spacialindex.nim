@@ -106,3 +106,8 @@ proc remove*[T](grid: var SpacialIndex[T]; obj: T) =
     let index = grid.cells[key].find(obj)
     if index >= 0:
       grid.cells[key].del(index)
+
+proc clear*[T](grid: var SpacialIndex[T]) =
+  ## Removes all values
+  grid.cells.clear()
+  grid.maxScale = 0
