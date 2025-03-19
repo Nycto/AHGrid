@@ -1,4 +1,4 @@
-import std/[unittest, math, sequtils], hsgs
+import std/[unittest, math, sequtils], spacialindex
 
 type
   GameObject = object
@@ -14,12 +14,10 @@ suite "Hierarchical Spatial Hash Grid Tests":
   let tree = obj("Tree", x = 20, y = 20, width = 15, height = 15)
 
   test "Insertion and Query":
-    var grid = newHSGS[GameObject]()
+    var grid = newSpacialIndex[GameObject]()
 
     grid.add(rock)
     grid.add(tree)
-
-    echo $grid
 
     check(grid.find(5, 5, 2).toSeq.mapIt(it.name) == @[ "Rock" ])
 
