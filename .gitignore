@@ -1,0 +1,16 @@
+# Ignore all
+tests/t_*
+benchmarks/*
+
+# Unignore all with extensions
+!tests/t_*.*
+!benchmarks/*.*
+
+*.js
+
+.DS_Store
+callgrind.out.*
+profile_results.txt
+docs
+*.idx
+*.css
