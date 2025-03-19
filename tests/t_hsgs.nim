@@ -14,7 +14,7 @@ suite "Hierarchical Spatial Hash Grid Tests":
   let tree = obj("Tree", x = 20, y = 20, width = 15, height = 15)
 
   test "Insertion and Query":
-    var grid = newHSGS[GameObject](3, 2)
+    var grid = newHSGS[GameObject]()
 
     grid.add(rock)
     grid.add(tree)

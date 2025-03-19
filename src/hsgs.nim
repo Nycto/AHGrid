@@ -1,97 +1,100 @@
 ##
-## Hierarchical Spatial Hash Grid
+## Spacial index that allows for querying of objects within a radius of a given point
 ##
 
-import std/[tables, sets]
+import std/[tables, math, strformat]
 
 type
-  CellKey = tuple[x, y: int32]
-
   SpatialObject* = concept obj
-    ## A value that can be stored in a 2d HSGS
+    ## A value that can be stored in a 2d SpacialIndex
     obj.x is int32
     obj.y is int32
     obj.width is int32
     obj.height is int32
 
-  HSGS*[T: SpatialObject] = ref object
-    ## A hierarchical spatial hash grid
-    next: HSGS[T]
-    cellSize: int32
+  CellKey = tuple[x, y, scale: int32]
+
+  SpacialIndex*[T: SpatialObject] = object
+    ## A 2d spacial index
+    maxScale: int32
     cells: Table[CellKey, seq[T]]
 
-proc newLayer[T](cellSize: int32): auto =
-  HSGS[T](cellSize: cellSize, cells: initTable[CellKey, seq[T]]())
+proc newSpacialIndex*[T](): SpacialIndex[T] =
+  ## Create a new SpacialIndex store
+  result.cells = initTable[CellKey, seq[T]]()
 
-proc newHSGS*[T](numLevels: SomeInteger, baseCellSize: int32): HSGS[T] =
-  ## Create a new HSGS store
-  result = newLayer[T](baseCellSize)
-  var current = result
-  for i in 1..<numLevels:
-    current.next = newLayer[T](current.cellSize * 2)
-    current = current.next
+proc `$`*(grid: SpacialIndex): string =
+  result = "SpacialIndex("
+  for key, values in grid.cells.pairs:
+    if values.len > 0:
+      result &= fmt"{key}: {values}, "
+  result &= ")"
 
-proc getCellIndex[T](grid: HSGS[T], x, y: int32): CellKey =
-  (x div grid.cellSize, y div grid.cellSize)
+# Values are normalized into cells that fall into the following layout:
+#
+#               0                   10                  20
+# | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+# |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+#   |       |       |       |       |       |       |       |       |
+#       |               |               |               |               |
+#                               |                                 |
 
-iterator eachLayer[T](grid: HSGS[T], grow: bool = false): HSGS[T] =
-  var layer = grid
-  while layer != nil:
-    yield layer
-    if grow and layer.next == nil:
-      layer.next = newLayer[T](layer.cellSize * 2)
-    layer = layer.next
+proc normalizeCoord(x, scale: int32): int32 =
+  ## Normalizes a coordinate onto a line where the only valid values are multiples of `scale`.
+  ## This also offsets each coordinate by `scale/2` to ensure that an entity that falls on the edge of
+  ## its "best" cell won't fall into the edge on the next cell up
+  assert(scale > 0, "Scale must be greater than 0")
+  let half = scale div 2
+  result = ((x + half) div scale * scale) - half
 
-proc `$`*(grid: HSGS): string =
-  result = "HSGS:\n"
-  for layer in grid.eachLayer():
-    result &= "  Level: " & $layer.cellSize & "\n"
-    for key, cell in layer.cells.pairs:
-      result &= "    Cell: " & $key & "\n"
-      for obj in cell:
-        result &= "     " & $obj & "\n"
+proc key(x, y, dimen: int32): CellKey =
+  ## Calculates the cell that a square falls into
+  ## `x` and `y` are coordinates, `dimen` is the length of the side of the square
 
-iterator cellRange(minCell, maxCell: CellKey): CellKey =
-  for x in minCell.x..maxCell.x:
-    for y in minCell.x..maxCell.y:
-      yield (x, y)
+  let scale = dimen.int.nextPowerOfTwo.int32
+  result = (x: x.normalizeCoord(scale), y: y.normalizeCoord(scale), scale: scale)
 
-proc add*[T](grid: HSGS[T], obj: T) =
+  # If the entity falls onto the edge between cells, put it in the next scale up
+  if result.x + scale < x + dimen or result.y + scale < y + dimen:
+    let scale = scale * 2
+    result = (x: x.normalizeCoord(scale), y: y.normalizeCoord(scale), scale: scale)
+
+  # The resulting cell should completely contain the object being stored
+  assert(x >= result.x, fmt"{x} >= {result.x}")
+  assert(y >= result.y, fmt"{y} >= {result.y}")
+  assert(x + dimen <= result.x + result.scale, fmt"{x} + {dimen} <= {result.x} + {result.scale}")
+  assert(y + dimen <= result.y + result.scale, fmt"{y} + {dimen} <= {result.y} + {result.scale}")
+
+proc key(obj: SpatialObject): CellKey =
+  ## Calculates the cell that an object should be stored in
+  key(obj.x, obj.y, max(obj.height, obj.width))
+
+proc add*[T](grid: var SpacialIndex[T], obj: T) =
   ## Add a value to this spacial grid
-  let size = max(obj.width, obj.height)
+  let key = obj.key
+  grid.maxScale = max(grid.maxScale, key.scale)
+  if grid.cells.hasKey(key):
+    grid.cells[key].add(obj)
+  else:
+    grid.cells[key] = @[ obj ]
 
-  for layer in grid.eachLayer(grow = true):
-    if layer.cellSize >= size:
-      let minCell = layer.getCellIndex(obj.x, obj.y)
-      let maxCell = layer.getCellIndex(obj.x + obj.width, obj.y + obj.height)
-      for cell in cellRange(minCell, maxCell):
-        layer.cells.mgetOrPut(cell, @[]).add(obj)
-      return
+iterator eachScale(grid: SpacialIndex): int32 =
+  ## Yields each scale present in the grid
+  var scale = 1'i32
+  while scale <= grid.maxScale:
+    yield scale
+    scale *= 2
 
-  raiseAssert("Could not find a layer to add to")
+iterator eachCellKey(x, y, radius, scale: int32): CellKey =
+  ## Yields each cell key within a given radius of a point at the given scale
+  for x in normalizeCoord(x - radius, scale)..normalizeCoord(x + radius, scale):
+    for y in normalizeCoord(y - radius, scale)..normalizeCoord(y + radius, scale):
+      yield (x, y, scale)
 
-iterator find*[T](grid: HSGS[T]; x, y, radius: int32): T =
+iterator find*[T](grid: SpacialIndex[T]; x, y, radius: int32): T =
   ## Finds all the values within a given radius of a point
-  var seen = initHashSet[T]()  # Track yielded objects
-  for layer in grid.eachLayer():
-    let minCell = layer.getCellIndex(x - radius, y - radius)
-    let maxCell = layer.getCellIndex(x + radius, y + radius)
-    for cell in cellRange(minCell, maxCell):
-      if cell in layer.cells:
-        for obj in layer.cells[cell]:
-          if obj notin seen:
-            seen.incl(obj)
-            yield obj
-
-# proc remove*[T, O](grid: HSGS[T, O], obj: O) =
-#   ## Remove a value from this layer
-#   for layer in grid.eachLayer():
-#     let minCell = layer.getCellIndex(obj.x, obj.y)
-#     let maxCell = layer.getCellIndex(obj.x + obj.width, obj.y + obj.height)
-#     for cell in cellRange(minCell[0], minCell[1], maxCell[0], maxCell[1]):
-#       if cell in layer.cells:
-#         layer.cells[cell].keepItIf(proc(o: O): bool = o != obj)
-# 
-# proc clear[T, O](grid: HSGS[T, O]) =
-#   for layer in grid.eachLayer():
-#     layer.cells.clear()
+  for scale in grid.eachScale:
+    for key in eachCellKey(x, y, radius, scale):
+      if grid.cells.hasKey(key):
+        for obj in grid.cells[key]:
+          yield obj
