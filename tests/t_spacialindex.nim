@@ -17,9 +17,9 @@ suite "Hierarchical Spatial Hash Grid Tests":
   test "Insertion and Query":
     var grid = newSpacialIndex[GameObject]()
 
-    grid.add(rock)
-    grid.add(tree)
-    grid.add(bush)
+    grid.insert(rock)
+    grid.insert(tree)
+    grid.insert(bush)
 
     check(grid.find(0, 0, 1).toSeq.len == 0)
 
@@ -31,7 +31,7 @@ suite "Hierarchical Spatial Hash Grid Tests":
 
   test "Removal":
     var grid = newSpacialIndex[GameObject]()
-    grid.add(rock)
+    grid.insert(rock)
 
     check(grid.find(5, 5, 1).toSeq.len == 1)
     grid.remove(rock)
@@ -41,9 +41,9 @@ suite "Hierarchical Spatial Hash Grid Tests":
 
   test "Clear":
     var grid = newSpacialIndex[GameObject]()
-    grid.add(rock)
-    grid.add(tree)
-    grid.add(bush)
+    grid.insert(rock)
+    grid.insert(tree)
+    grid.insert(bush)
 
     check(grid.find(50, 50, 50).toSeq.len == 3)
 
@@ -55,8 +55,8 @@ suite "Hierarchical Spatial Hash Grid Tests":
 
     check($grid == "SpacialIndex()")
 
-    grid.add(rock)
-    grid.add(tree)
-    grid.add(bush)
+    grid.insert(rock)
+    grid.insert(tree)
+    grid.insert(bush)
 
     check($grid == """SpacialIndex((x: 100, y: 100, scale: 8): @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], (x: 16, y: 16, scale: 32): @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], (x: 4, y: 4, scale: 8): @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], )""")

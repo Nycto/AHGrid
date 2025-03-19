@@ -69,7 +69,7 @@ proc key(obj: SpatialObject): CellKey =
   ## Calculates the cell that an object should be stored in
   key(obj.x, obj.y, max(obj.height, obj.width))
 
-proc add*[T](grid: var SpacialIndex[T], obj: T) =
+proc insert*[T](grid: var SpacialIndex[T], obj: T) =
   ## Add a value to this spacial grid
   let key = obj.key
   grid.maxScale = max(grid.maxScale, key.scale)
