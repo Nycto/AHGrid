@@ -94,11 +94,20 @@ iterator eachCellKey(x, y, radius, scale: int32): CellKey =
 
 iterator find*[T](grid: SpacialIndex[T]; x, y, radius: int32): T =
   ## Finds all the values within a given radius of a point
+  when defined(logSearchSpace):
+    var searchSpace = 0
+
   for scale in grid.eachScale:
     for key in eachCellKey(x, y, radius, scale):
       if grid.cells.hasKey(key):
         for obj in grid.cells[key]:
           yield obj
+
+      when defined(logSearchSpace):
+        searchSpace += 1
+
+  when defined(logSearchSpace):
+    echo "Search space: ", searchSpace, " at ", x, ", ", y, " with radius ", radius
 
 proc remove*[T](grid: var SpacialIndex[T]; obj: T) =
   ## Removes a value
