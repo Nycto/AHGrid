@@ -134,5 +134,6 @@ proc remove*[T](grid: var SpacialIndex[T]; obj: T) =
 
 proc clear*[T](grid: var SpacialIndex[T]) =
   ## Removes all values
-  grid.cells.clear()
+  for cell in grid.cells.mvalues:
+    cell.setLen(0)
   grid.maxScale = 0
