@@ -13,6 +13,7 @@ suite "Hierarchical Spatial Hash Grid Tests":
   let rock = obj("Rock", x = 5, y = 5, width = 3, height = 3)
   let tree = obj("Tree", x = 20, y = 20, width = 15, height = 15)
   let bush = obj("Bush", x = 100, y = 100, width = 5, height = 5)
+  let mountain = obj("mountain", x = -200, y = -200, width = 500, height = 500)
 
   test "Insertion and Query":
     var grid = newSpacialIndex[GameObject]()
@@ -60,3 +61,13 @@ suite "Hierarchical Spatial Hash Grid Tests":
     grid.insert(bush)
 
     check($grid == """SpacialIndex((x: 100, y: 100, scale: 8): @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], (x: 16, y: 16, scale: 32): @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], (x: 4, y: 4, scale: 8): @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], )""")
+
+  test "Changing the minimum cell size":
+    var grid = newSpacialIndex[GameObject](128)
+
+    grid.insert(rock)
+    grid.insert(tree)
+    grid.insert(bush)
+    grid.insert(mountain)
+
+    check(grid.find(0, 0, 100).toSeq.len == 4)

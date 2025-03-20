@@ -16,12 +16,13 @@ type
 
   SpacialIndex*[T: SpatialObject] = object
     ## A 2d spacial index
-    maxScale: int32
+    maxScale, minScale: int32
     cells: Table[CellKey, seq[T]]
 
-proc newSpacialIndex*[T](): SpacialIndex[T] =
+proc newSpacialIndex*[T](minCellSize: int32 = 2): SpacialIndex[T] =
   ## Create a new SpacialIndex store
   result.cells = initTable[CellKey, seq[T]]()
+  result.minScale = minCellSize.nextPowerOfTwo.int32
 
 proc `$`*(grid: SpacialIndex): string =
   result = "SpacialIndex("
@@ -47,11 +48,11 @@ proc normalizeCoord(x, scale: int32): int32 =
   let half = scale div 2
   result = ((x + half) div scale * scale) - half
 
-proc key(x, y, dimen: int32): CellKey =
+proc key(grid: SpacialIndex, x, y, dimen: int32): CellKey =
   ## Calculates the cell that a square falls into
   ## `x` and `y` are coordinates, `dimen` is the length of the side of the square
 
-  let scale = dimen.int.nextPowerOfTwo.int32
+  let scale = max(dimen.int.nextPowerOfTwo.int32, grid.minScale)
   result = (x: x.normalizeCoord(scale), y: y.normalizeCoord(scale), scale: scale)
 
   # If the entity falls onto the edge between cells, put it in the next scale up
@@ -65,13 +66,13 @@ proc key(x, y, dimen: int32): CellKey =
   assert(x + dimen <= result.x + result.scale, fmt"{x} + {dimen} <= {result.x} + {result.scale}")
   assert(y + dimen <= result.y + result.scale, fmt"{y} + {dimen} <= {result.y} + {result.scale}")
 
-proc key(obj: SpatialObject): CellKey =
+proc key(obj: SpatialObject, grid: SpacialIndex): CellKey =
   ## Calculates the cell that an object should be stored in
-  key(obj.x, obj.y, max(obj.height, obj.width))
+  key(grid, obj.x, obj.y, max(obj.height, obj.width))
 
 proc insert*[T](grid: var SpacialIndex[T], obj: T) =
   ## Add a value to this spacial grid
-  let key = obj.key
+  let key = obj.key(grid)
   grid.maxScale = max(grid.maxScale, key.scale)
   if grid.cells.hasKey(key):
     grid.cells[key].add(obj)
@@ -80,7 +81,7 @@ proc insert*[T](grid: var SpacialIndex[T], obj: T) =
 
 iterator eachScale(grid: SpacialIndex): int32 =
   ## Yields each scale present in the grid
-  var scale = 1'i32
+  var scale = grid.minScale
   while scale <= grid.maxScale:
     yield scale
     scale *= 2
@@ -101,7 +102,7 @@ iterator find*[T](grid: SpacialIndex[T]; x, y, radius: int32): T =
 
 proc remove*[T](grid: var SpacialIndex[T]; obj: T) =
   ## Removes a value
-  let key = obj.key
+  let key = obj.key(grid)
   if grid.cells.hasKey(key):
     let index = grid.cells[key].find(obj)
     if index >= 0:
