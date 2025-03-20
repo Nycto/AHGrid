@@ -1,4 +1,4 @@
-import benchy, std/[random, strformat], spacialindex
+import benchy, std/[random, strformat], ahgrid
 
 type Entry = tuple[x, y, width, height: int32]
 
@@ -17,7 +17,7 @@ for num in [10, 100, 1000]:
     var entries = makeEntries(num, -spread..spread)
     for dist in [1'i32, 10, 100, 1_000]:
       timeIt fmt"{num} entries, spread over {spread} -- querying at {dist} distance", 100:
-        var space = newSpacialIndex[Entry](dist * 10)
+        var space = newAHGrid[Entry](dist * 10)
         for e in entries:
           space.insert(e)
 

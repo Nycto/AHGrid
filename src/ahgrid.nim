@@ -6,7 +6,7 @@ import std/[tables, math, strformat]
 
 type
   SpatialObject* = concept obj
-    ## A value that can be stored in a 2d SpacialIndex
+    ## A value that can be stored in a 2d AHGrid
     obj.x is int32
     obj.y is int32
     obj.width is int32
@@ -14,18 +14,18 @@ type
 
   CellKey = tuple[x, y, scale: int32]
 
-  SpacialIndex*[T: SpatialObject] = object
+  AHGrid*[T: SpatialObject] = object
     ## A 2d spacial index
     maxScale, minScale: int32
     cells: Table[CellKey, seq[T]]
 
-proc newSpacialIndex*[T](minCellSize: int32 = 2): SpacialIndex[T] =
-  ## Create a new SpacialIndex store
+proc newAHGrid*[T](minCellSize: int32 = 2): AHGrid[T] =
+  ## Create a new AHGrid store
   result.cells = initTable[CellKey, seq[T]]()
   result.minScale = minCellSize.nextPowerOfTwo.int32
 
-proc `$`*(grid: SpacialIndex): string =
-  result = "SpacialIndex("
+proc `$`*(grid: AHGrid): string =
+  result = "AHGrid("
   for key, values in grid.cells.pairs:
     if values.len > 0:
       result &= fmt"{key}: {values}, "
@@ -63,7 +63,7 @@ proc normalizeCoord(x, scale: int32): int32 =
 proc buildCellKey(x, y, scale: int32): CellKey =
   (x: x.normalizeCoord(scale), y: y.normalizeCoord(scale), scale: scale)
 
-proc key(grid: SpacialIndex, x, y, dimen: int32): CellKey =
+proc key(grid: AHGrid, x, y, dimen: int32): CellKey =
   ## Calculates the cell that a square falls into
   ## `x` and `y` are coordinates, `dimen` is the length of the side of the square
 
@@ -81,11 +81,11 @@ proc key(grid: SpacialIndex, x, y, dimen: int32): CellKey =
   assert(x + dimen <= result.x + result.scale, fmt"{x} + {dimen} <= {result.x} + {result.scale}")
   assert(y + dimen <= result.y + result.scale, fmt"{y} + {dimen} <= {result.y} + {result.scale}")
 
-proc key(obj: SpatialObject, grid: SpacialIndex): CellKey =
+proc key(obj: SpatialObject, grid: AHGrid): CellKey =
   ## Calculates the cell that an object should be stored in
   key(grid, obj.x, obj.y, max(obj.height, obj.width))
 
-proc insert*[T](grid: var SpacialIndex[T], obj: T) =
+proc insert*[T](grid: var AHGrid[T], obj: T) =
   ## Add a value to this spacial grid
   let key = obj.key(grid)
   grid.maxScale = max(grid.maxScale, key.scale)
@@ -94,7 +94,7 @@ proc insert*[T](grid: var SpacialIndex[T], obj: T) =
   else:
     grid.cells[key] = @[ obj ]
 
-iterator eachScale(grid: SpacialIndex): int32 =
+iterator eachScale(grid: AHGrid): int32 =
   ## Yields each scale present in the grid
   var scale = grid.minScale
   while scale <= grid.maxScale:
@@ -107,7 +107,7 @@ iterator eachCellKey(x, y, radius, scale: int32): CellKey =
     for y in countup(normalizeCoord(y - radius, scale), normalizeCoord(y + radius, scale), scale):
       yield (x, y, scale)
 
-iterator find*[T](grid: SpacialIndex[T]; x, y, radius: int32): T =
+iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
   ## Finds all the values within a given radius of a point
   when defined(logSearchSpace):
     var searchSpace = 0
@@ -124,7 +124,7 @@ iterator find*[T](grid: SpacialIndex[T]; x, y, radius: int32): T =
   when defined(logSearchSpace):
     echo "Search space: ", searchSpace, " at ", x, ", ", y, " with radius ", radius
 
-proc remove*[T](grid: var SpacialIndex[T]; obj: T) =
+proc remove*[T](grid: var AHGrid[T]; obj: T) =
   ## Removes a value
   let key = obj.key(grid)
   if grid.cells.hasKey(key):
@@ -132,7 +132,7 @@ proc remove*[T](grid: var SpacialIndex[T]; obj: T) =
     if index >= 0:
       grid.cells[key].del(index)
 
-proc clear*[T](grid: var SpacialIndex[T]) =
+proc clear*[T](grid: var AHGrid[T]) =
   ## Removes all values
   for cell in grid.cells.mvalues:
     cell.setLen(0)
