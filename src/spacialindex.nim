@@ -88,8 +88,8 @@ iterator eachScale(grid: SpacialIndex): int32 =
 
 iterator eachCellKey(x, y, radius, scale: int32): CellKey =
   ## Yields each cell key within a given radius of a point at the given scale
-  for x in normalizeCoord(x - radius, scale)..normalizeCoord(x + radius, scale):
-    for y in normalizeCoord(y - radius, scale)..normalizeCoord(y + radius, scale):
+  for x in countup(normalizeCoord(x - radius, scale), normalizeCoord(x + radius, scale), scale):
+    for y in countup(normalizeCoord(y - radius, scale), normalizeCoord(y + radius, scale), scale):
       yield (x, y, scale)
 
 iterator find*[T](grid: SpacialIndex[T]; x, y, radius: int32): T =
