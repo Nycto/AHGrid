@@ -40,13 +40,25 @@ proc `$`*(grid: SpacialIndex): string =
 #       |               |               |               |               |
 #                               |                                 |
 
+proc oneIfNegaitve(x: int32): int32 {.inline.} =
+  ## Returns `1` if the value is positive, otherwise returns 0
+  const shiftBy = sizeof(x).int32 * 8 - 1
+  (x shr shiftBy) and 1
+
 proc normalizeCoord(x, scale: int32): int32 =
   ## Normalizes a coordinate onto a line where the only valid values are multiples of `scale`.
   ## This also offsets each coordinate by `scale/2` to ensure that an entity that falls on the edge of
   ## its "best" cell won't fall into the edge on the next cell up
   assert(scale > 0, "Scale must be greater than 0")
+  assert(scale.isPowerOfTwo, "Scale must be a power of two")
+
   let half = scale div 2
-  result = ((x + half) div scale * scale) - half
+
+  let adjust = oneIfNegaitve(x + half) * (-scale + 1)
+  # The above line is equivalent to:
+  # let adjust = if x + half >= 0: 0'i32 else: -scale + 1
+
+  result = (x + half + adjust) div scale * scale - half
 
 proc key(grid: SpacialIndex, x, y, dimen: int32): CellKey =
   ## Calculates the cell that a square falls into
