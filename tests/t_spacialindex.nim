@@ -101,3 +101,7 @@ suite "Hierarchical Spatial Hash Grid Tests":
       check(normalizeCoord(x.int32, 2) == expectedAtScale2.int32)
       check(normalizeCoord(x.int32, 4) == expectedAtScale4.int32)
       check(normalizeCoord(x.int32, 8) == expectedAtScale8.int32)
+
+  test "Keys that fall on the very edge of a cell":
+    var grid = newSpacialIndex[GameObject](128)
+    check(grid.key(81, 11, 78) == (-256'i32, -256'i32, 512'i32))

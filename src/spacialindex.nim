@@ -60,17 +60,20 @@ proc normalizeCoord(x, scale: int32): int32 =
 
   result = (x + half + adjust) div scale * scale - half
 
+proc buildCellKey(x, y, scale: int32): CellKey =
+  (x: x.normalizeCoord(scale), y: y.normalizeCoord(scale), scale: scale)
+
 proc key(grid: SpacialIndex, x, y, dimen: int32): CellKey =
   ## Calculates the cell that a square falls into
   ## `x` and `y` are coordinates, `dimen` is the length of the side of the square
 
-  let scale = max(dimen.int.nextPowerOfTwo.int32, grid.minScale)
-  result = (x: x.normalizeCoord(scale), y: y.normalizeCoord(scale), scale: scale)
+  var scale = max(dimen.int.nextPowerOfTwo.int32, grid.minScale)
+  result = buildCellKey(x, y, scale)
 
   # If the entity falls onto the edge between cells, put it in the next scale up
-  if result.x + scale < x + dimen or result.y + scale < y + dimen:
-    let scale = scale * 2
-    result = (x: x.normalizeCoord(scale), y: y.normalizeCoord(scale), scale: scale)
+  while x + dimen >= result.x + scale or y + dimen >= result.y + scale:
+    scale = scale * 2
+    result = buildCellKey(x, y, scale)
 
   # The resulting cell should completely contain the object being stored
   assert(x >= result.x, fmt"{x} >= {result.x}")
