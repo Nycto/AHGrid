@@ -60,20 +60,21 @@ proc cellIndex(x, scale: int32): int32 =
 
   result = (x + half + adjust) div scale * scale - half
 
-proc buildCellIndex(x, y, scale: int32): CellIndex =
-  (x: x.cellIndex(scale), y: y.cellIndex(scale), scale: scale)
-
 proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
   ## Calculates the cell that a square falls into
   ## `x` and `y` are coordinates, `dimen` is the length of the side of the square
 
   var scale = max(dimen.int.nextPowerOfTwo.int32, grid.minScale)
-  result = buildCellIndex(x, y, scale)
 
-  # If the entity falls onto the edge between cells, put it in the next scale up
-  while x + dimen >= result.x + scale or y + dimen >= result.y + scale:
+  while true:
+    result = (x: x.cellIndex(scale), y: y.cellIndex(scale), scale: scale)
+
+    # If the entity fits completely into the cell we've picked, we're done.
+    if x + dimen < result.x + scale and y + dimen < result.y + scale:
+      break
+
+    # If it doesn't fit, we need to try the next scale up
     scale = scale * 2
-    result = buildCellIndex(x, y, scale)
 
   # The resulting cell should completely contain the object being stored
   assert(x >= result.x, fmt"{x} >= {result.x}")
