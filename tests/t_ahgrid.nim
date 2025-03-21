@@ -98,10 +98,10 @@ suite "Adaptive Hashing Grid":
 
     for (x, expectedAtScale2, expectedAtScale4, expectedAtScale8) in coordinates:
       checkpoint "x: " & $x
-      check(normalizeCoord(x.int32, 2) == expectedAtScale2.int32)
-      check(normalizeCoord(x.int32, 4) == expectedAtScale4.int32)
-      check(normalizeCoord(x.int32, 8) == expectedAtScale8.int32)
+      check(cellIndex(x.int32, 2) == expectedAtScale2.int32)
+      check(cellIndex(x.int32, 4) == expectedAtScale4.int32)
+      check(cellIndex(x.int32, 8) == expectedAtScale8.int32)
 
   test "Keys that fall on the very edge of a cell":
     var grid = newAHGrid[GameObject](128)
-    check(grid.key(81, 11, 78) == (-256'i32, -256'i32, 512'i32))
+    check(grid.pickCellIndex(81, 11, 78) == (-256'i32, -256'i32, 512'i32))
