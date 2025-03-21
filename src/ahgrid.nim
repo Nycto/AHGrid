@@ -90,10 +90,7 @@ proc insert*[T](grid: var AHGrid[T], obj: T) =
   ## Add a value to this spacial grid
   let key = obj.pickCellIndex(grid)
   grid.maxScale = max(grid.maxScale, key.scale)
-  if grid.cells.hasKey(key):
-    grid.cells[key].add(obj)
-  else:
-    grid.cells[key] = @[ obj ]
+  grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
 
 iterator eachScale(grid: AHGrid): int32 =
   ## Yields each scale present in the grid
