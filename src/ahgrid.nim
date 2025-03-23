@@ -14,15 +14,14 @@ type
 
   CellIndex = tuple[xBucket, yBucket, scale: int32]
 
-  AHGrid*[T: SpatialObject] = object
+  AHGrid*[T: SpatialObject] {.requiresInit.} = object
     ## A 2d spacial index
     maxScale, minScale: int32
     cells: Table[CellIndex, seq[T]]
 
 proc newAHGrid*[T](minCellSize: int32 = 2): AHGrid[T] =
   ## Create a new AHGrid store
-  result.cells = initTable[CellIndex, seq[T]]()
-  result.minScale = minCellSize.nextPowerOfTwo.int32
+  return AHGrid[T](minScale: minCellSize.nextPowerOfTwo.int32, maxScale: 0, cells: initTable[CellIndex, seq[T]]())
 
 proc `$`*(index: CellIndex): string = fmt"{index.xBucket}x{index.yBucket}x{index.scale}"
 
