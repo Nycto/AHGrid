@@ -104,11 +104,11 @@ iterator eachScale(grid: AHGrid): int32 =
 
 iterator eachCellIndex(x, y, radius, scale: int32): CellIndex =
   ## Yields each cell key within a given radius of a point at the given scale
-  let xRange = chooseBucket(x - radius, scale)..chooseBucket(x + radius, scale)
-  let yRange = chooseBucket(y - radius, scale)..chooseBucket(y + radius, scale)
+  let (xLow, xHigh) = (chooseBucket(x - radius, scale), chooseBucket(x + radius, scale))
+  let (yLow, yHigh)= (chooseBucket(y - radius, scale), chooseBucket(y + radius, scale))
 
-  for x in countup(xRange.a, xRange.b, scale):
-    for y in countup(yRange.a, yRange.b, scale):
+  for x in countup(xLow, xHigh, scale):
+    for y in countup(yLow, yHigh, scale):
       yield (x, y, scale)
 
 iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
