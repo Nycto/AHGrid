@@ -46,20 +46,22 @@ proc oneIfNegaitve(x: int32): int32 {.inline.} =
   const shiftBy = sizeof(x).int32 * 8 - 1
   (x shr shiftBy) and 1
 
-proc cellIndex(x, scale: int32): int32 =
+proc chooseBucket(coord, scale: int32): int32 =
   ## Normalizes a coordinate onto a line where the only valid values are multiples of `scale`.
   ## This also offsets each coordinate by `scale/2` to ensure that an entity that falls on the edge of
-  ## its "best" cell won't fall into the edge on the next cell up
+  ## its "best" cell won't fall into the edge on the net cell up
   assert(scale > 0, "Scale must be greater than 0")
   assert(scale.isPowerOfTwo, "Scale must be a power of two")
 
   let half = scale div 2
 
-  let adjust = oneIfNegaitve(x + half) * (-scale + 1)
+  # We need to specifically adjust the index to handle negative coordinates. This
+  # looks funky because we also have to deal with the shifting root coordinates
+  let adjust = oneIfNegaitve(coord + half) * (-scale + 1)
   # The above line is equivalent to:
-  # let adjust = if x + half >= 0: 0'i32 else: -scale + 1
+  # let adjust = if coord + half >= 0: 0'i32 else: -scale + 1
 
-  result = (x + half + adjust) div scale * scale - half
+  result = (coord + half + adjust) div scale * scale - half
 
 proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
   ## Calculates the cell that a square falls into
@@ -68,7 +70,7 @@ proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
   var scale = max(dimen.int.nextPowerOfTwo.int32, grid.minScale)
 
   while true:
-    result = (xBucket: x.cellIndex(scale), yBucket: y.cellIndex(scale), scale: scale)
+    result = (xBucket: x.chooseBucket(scale), yBucket: y.chooseBucket(scale), scale: scale)
 
     # If the entity fits completely into the cell we've picked, we're done.
     if x + dimen < result.xBucket + scale and y + dimen < result.yBucket + scale:
@@ -102,8 +104,8 @@ iterator eachScale(grid: AHGrid): int32 =
 
 iterator eachCellIndex(x, y, radius, scale: int32): CellIndex =
   ## Yields each cell key within a given radius of a point at the given scale
-  let xRange = cellIndex(x - radius, scale)..cellIndex(x + radius, scale)
-  let yRange = cellIndex(y - radius, scale)..cellIndex(y + radius, scale)
+  let xRange = chooseBucket(x - radius, scale)..chooseBucket(x + radius, scale)
+  let yRange = chooseBucket(y - radius, scale)..chooseBucket(y + radius, scale)
 
   for x in countup(xRange.a, xRange.b, scale):
     for y in countup(yRange.a, yRange.b, scale):
