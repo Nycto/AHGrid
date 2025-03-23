@@ -12,7 +12,7 @@ type
     obj.width is int32
     obj.height is int32
 
-  CellIndex = tuple[x, y, scale: int32]
+  CellIndex = tuple[xBucket, yBucket, scale: int32]
 
   AHGrid*[T: SpatialObject] = object
     ## A 2d spacial index
@@ -23,6 +23,8 @@ proc newAHGrid*[T](minCellSize: int32 = 2): AHGrid[T] =
   ## Create a new AHGrid store
   result.cells = initTable[CellIndex, seq[T]]()
   result.minScale = minCellSize.nextPowerOfTwo.int32
+
+proc `$`*(index: CellIndex): string = fmt"{index.xBucket}x{index.yBucket}x{index.scale}"
 
 proc `$`*(grid: AHGrid): string =
   result = "AHGrid("
@@ -67,20 +69,20 @@ proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
   var scale = max(dimen.int.nextPowerOfTwo.int32, grid.minScale)
 
   while true:
-    result = (x: x.cellIndex(scale), y: y.cellIndex(scale), scale: scale)
+    result = (xBucket: x.cellIndex(scale), yBucket: y.cellIndex(scale), scale: scale)
 
     # If the entity fits completely into the cell we've picked, we're done.
-    if x + dimen < result.x + scale and y + dimen < result.y + scale:
+    if x + dimen < result.xBucket + scale and y + dimen < result.yBucket + scale:
       break
 
     # If it doesn't fit, we need to try the next scale up
     scale = scale * 2
 
   # The resulting cell should completely contain the object being stored
-  assert(x >= result.x, fmt"{x} >= {result.x}")
-  assert(y >= result.y, fmt"{y} >= {result.y}")
-  assert(x + dimen <= result.x + result.scale, fmt"{x} + {dimen} <= {result.x} + {result.scale}")
-  assert(y + dimen <= result.y + result.scale, fmt"{y} + {dimen} <= {result.y} + {result.scale}")
+  assert(x >= result.xBucket, fmt"{x} >= {result.xBucket}")
+  assert(y >= result.yBucket, fmt"{y} >= {result.yBucket}")
+  assert(x + dimen <= result.xBucket + result.scale, fmt"{x} + {dimen} <= {result.xBucket} + {result.scale}")
+  assert(y + dimen <= result.yBucket + result.scale, fmt"{y} + {dimen} <= {result.yBucket} + {result.scale}")
 
 proc pickCellIndex(obj: SpatialObject, grid: AHGrid): CellIndex =
   ## Calculates the cell that an object should be stored in
