@@ -96,11 +96,15 @@ proc pickCellIndex(obj: SpatialObject, grid: AHGrid): CellIndex =
   ## Calculates the cell that an object should be stored in
   pickCellIndex(grid, obj.x, obj.y, max(obj.height, obj.width))
 
+proc insertAtKey[T](grid: var AHGrid[T], key: CellIndex, obj: T) =
+  ## Inserts a value when the key is already known
+  grid.maxScale = max(grid.maxScale, key.scale)
+  grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
+
 proc insert*[T](grid: var AHGrid[T], obj: T): GridHandle[T] =
   ## Add a value to this spacial grid
   let key = obj.pickCellIndex(grid)
-  grid.maxScale = max(grid.maxScale, key.scale)
-  grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
+  insertAtKey(grid, key, obj)
   return GridHandle[T](key: key, obj: obj)
 
 iterator eachScale(grid: AHGrid): int32 =
@@ -140,6 +144,14 @@ proc remove*[T](grid: var AHGrid[T]; handle: GridHandle[T]) =
   let index = grid.cells[handle.key].find(handle.obj)
   if index >= 0:
     grid.cells[handle.key].del(index)
+
+proc update*[T](grid: var AHGrid[T]; handle: var GridHandle[T]) =
+  ## Updates the spatial indexing for an object
+  let newKey = handle.obj.pickCellIndex(grid)
+  if newKey != handle.key:
+    grid.remove(handle)
+    insertAtKey(grid, newKey, handle.obj)
+    handle.key = newKey
 
 proc clear*[T](grid: var AHGrid[T]) =
   ## Removes all values

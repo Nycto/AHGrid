@@ -43,6 +43,23 @@ suite "Adaptive Hashing Grid":
     grid.remove(handle)
     check(grid.find(5, 5, 1).toSeq.len == 0)
 
+  test "Updating the position of a value":
+    var grid = newAHGrid[GameObject]()
+
+    let fern = obj("fern", 1, 2, 3, 4)
+
+    var handle = grid.insert(fern)
+    check(grid.find(5, 5, 1).toSeq.len == 1)
+
+    grid.update(handle)
+    check(grid.find(5, 5, 1).toSeq.len == 1)
+    check(grid.find(200, 5, 10).toSeq.len == 0)
+
+    fern.x = 202
+    grid.update(handle)
+    check(grid.find(5, 5, 1).toSeq.len == 0)
+    check(grid.find(200, 5, 10).toSeq.len == 1)
+
   test "Clear":
     var grid = newAHGrid[GameObject]()
     discard grid.insert(rock)
