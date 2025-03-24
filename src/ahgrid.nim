@@ -1,6 +1,18 @@
 ##
 ## Spacial index that allows for querying of objects within a radius of a given point
 ##
+## Details about the specific sof this algorithm can be found here:
+##
+## https://elephantstarballoon.com/post/ahgrid/
+##
+runnableExamples:
+  var grid = newAHGrid[tuple[x, y, width, height: int32]]()
+
+  discard grid.insert((x: 1'i32, y: 2'i32, width: 3'i32, height: 4'i32))
+  discard grid.insert((x: 5'i32, y: 6'i32, width: 7'i32, height: 8'i32))
+
+  for obj in grid.find(3, 4, 10):
+    echo "Found object near point: ", obj
 
 import std/[tables, math, strformat]
 
