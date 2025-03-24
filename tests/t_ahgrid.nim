@@ -1,4 +1,4 @@
-import std/[unittest, math, sequtils]
+import std/[unittest, math, sequtils, algorithm]
 import ahgrid {.all.}
 
 type
@@ -16,7 +16,7 @@ suite "Adaptive Hashing Grid":
   let rock = obj("Rock", x = 5, y = 5, width = 3, height = 3)
   let tree = obj("Tree", x = 20, y = 20, width = 15, height = 15)
   let bush = obj("Bush", x = 100, y = 100, width = 5, height = 5)
-  let mountain = obj("mountain", x = -200, y = -200, width = 500, height = 500)
+  let mountain = obj("Mountain", x = -200, y = -200, width = 500, height = 500)
 
   test "Insertion and Query":
     var grid = newAHGrid[GameObject]()
@@ -32,6 +32,17 @@ suite "Adaptive Hashing Grid":
     check(grid.find(6, 6, 2).toSeq.mapIt(it.name) == @[ "Rock" ])
 
     check(grid.find(15, 15, 10).toSeq.mapIt(it.name) == @[ "Rock", "Tree" ])
+
+  test "Iterating through all values":
+    var grid = newAHGrid[GameObject]()
+    check(grid.toSeq.len == 0)
+
+    discard grid.insert(rock)
+    discard grid.insert(tree)
+    discard grid.insert(bush)
+    discard grid.insert(mountain)
+
+    check(grid.toSeq.mapIt(it.name).sorted == @[ "Bush", "Mountain", "Rock", "Tree" ])
 
   test "Removal":
     var grid = newAHGrid[GameObject]()

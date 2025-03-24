@@ -139,6 +139,12 @@ iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
   when defined(logSearchSpace):
     echo "Search space: ", searchSpace, " at ", x, ", ", y, " with radius ", radius
 
+iterator items*[T](grid: AHGrid[T]): T =
+  ## Iterates all values in this grid
+  for cell in grid.cells.values:
+    for obj in cell:
+      yield obj
+
 proc remove*[T](grid: var AHGrid[T]; handle: GridHandle[T]) =
   ## Removes a value
   let index = grid.cells[handle.key].find(handle.obj)
