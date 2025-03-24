@@ -30,7 +30,7 @@ proc newAHGrid*[T](minCellSize: int32 = 2): AHGrid[T] =
 
 proc `=copy`*[T](a: var AHGrid[T], b: AHGrid[T]) {.error.}
 
-proc `$`*(index: CellIndex): string = fmt"{index.xBucket}x{index.yBucket}x{index.scale}"
+proc `$`(index: CellIndex): string = fmt"{index.xBucket}x{index.yBucket}x{index.scale}"
 
 proc `$`*(grid: AHGrid): string =
   result = "AHGrid("
