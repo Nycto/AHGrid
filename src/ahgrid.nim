@@ -48,7 +48,7 @@ proc `$`*(grid: AHGrid): string =
 #       |               |               |               |               |
 #                               |                                 |
 
-proc oneIfNegaitve(x: int32): int32 {.inline.} =
+proc oneIfNegative(x: int32): int32 {.inline.} =
   ## Returns `1` if the value is positive, otherwise returns 0
   const shiftBy = sizeof(x).int32 * 8 - 1
   (x shr shiftBy) and 1
@@ -64,7 +64,7 @@ proc chooseBucket(coord, scale: int32): int32 =
 
   # We need to specifically adjust the index to handle negative coordinates. This
   # looks funky because we also have to deal with the shifting root coordinates
-  let adjust = oneIfNegaitve(coord + half) * (-scale + 1)
+  let adjust = oneIfNegative(coord + half) * (-scale + 1)
   # The above line is equivalent to:
   # let adjust = if coord + half >= 0: 0'i32 else: -scale + 1
 
