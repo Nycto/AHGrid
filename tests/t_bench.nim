@@ -19,7 +19,7 @@ for num in [10, 100, 1000]:
       timeIt fmt"{num} entries, spread over {spread} -- querying at {dist} distance", 100:
         var space = newAHGrid[Entry](dist * 10)
         for e in entries:
-          space.insert(e)
+          discard space.insert(e)
 
         for me in entries:
           for other in space.find(me.x, me.y, dist):

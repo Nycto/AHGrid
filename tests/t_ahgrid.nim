@@ -2,9 +2,11 @@ import std/[unittest, math, sequtils]
 import ahgrid {.all.}
 
 type
-  GameObject = object
+  GameObject = ref object
     name*: string
     x*, y*, width*, height*: int32
+
+proc `$`*(obj: GameObject): auto = $obj[]
 
 proc obj(name: string; x, y, width, height: int32): auto =
   GameObject(name: name, x: x, y: y, width: width, height: height)
@@ -19,9 +21,9 @@ suite "Adaptive Hashing Grid":
   test "Insertion and Query":
     var grid = newAHGrid[GameObject]()
 
-    grid.insert(rock)
-    grid.insert(tree)
-    grid.insert(bush)
+    discard grid.insert(rock)
+    discard grid.insert(tree)
+    discard grid.insert(bush)
 
     check(grid.find(0, 0, 1).toSeq.len == 0)
 
@@ -33,19 +35,19 @@ suite "Adaptive Hashing Grid":
 
   test "Removal":
     var grid = newAHGrid[GameObject]()
-    grid.insert(rock)
+    let handle = grid.insert(rock)
 
     check(grid.find(5, 5, 1).toSeq.len == 1)
-    grid.remove(rock)
+    grid.remove(handle)
     check(grid.find(5, 5, 1).toSeq.len == 0)
-    grid.remove(rock)
+    grid.remove(handle)
     check(grid.find(5, 5, 1).toSeq.len == 0)
 
   test "Clear":
     var grid = newAHGrid[GameObject]()
-    grid.insert(rock)
-    grid.insert(tree)
-    grid.insert(bush)
+    discard grid.insert(rock)
+    discard grid.insert(tree)
+    discard grid.insert(bush)
 
     check(grid.find(50, 50, 50).toSeq.len == 3)
 
@@ -57,19 +59,19 @@ suite "Adaptive Hashing Grid":
 
     check($grid == "AHGrid()")
 
-    grid.insert(rock)
-    grid.insert(tree)
-    grid.insert(bush)
+    discard grid.insert(rock)
+    discard grid.insert(tree)
+    discard grid.insert(bush)
 
     check($grid == """AHGrid(100x100x8: @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], 16x16x32: @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], 4x4x8: @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], )""")
 
   test "Changing the minimum cell size":
     var grid = newAHGrid[GameObject](128)
 
-    grid.insert(rock)
-    grid.insert(tree)
-    grid.insert(bush)
-    grid.insert(mountain)
+    discard grid.insert(rock)
+    discard grid.insert(tree)
+    discard grid.insert(bush)
+    discard grid.insert(mountain)
 
     check(grid.find(0, 0, 100).toSeq.len == 4)
 

@@ -12,6 +12,11 @@ type
     obj.width is int32
     obj.height is int32
 
+  GridHandle*[T] = object
+    ## A handle for a value that can be stored in a AHGrid -- used to update that value
+    obj: T
+    key: CellIndex
+
   CellIndex = tuple[xBucket, yBucket, scale: int32]
 
   AHGrid*[T: SpatialObject] {.requiresInit.} = object
@@ -22,6 +27,8 @@ type
 proc newAHGrid*[T](minCellSize: int32 = 2): AHGrid[T] =
   ## Create a new AHGrid store
   return AHGrid[T](minScale: minCellSize.nextPowerOfTwo.int32, maxScale: 0, cells: initTable[CellIndex, seq[T]]())
+
+proc `=copy`*[T](a: var AHGrid[T], b: AHGrid[T]) {.error.}
 
 proc `$`*(index: CellIndex): string = fmt"{index.xBucket}x{index.yBucket}x{index.scale}"
 
@@ -89,11 +96,12 @@ proc pickCellIndex(obj: SpatialObject, grid: AHGrid): CellIndex =
   ## Calculates the cell that an object should be stored in
   pickCellIndex(grid, obj.x, obj.y, max(obj.height, obj.width))
 
-proc insert*[T](grid: var AHGrid[T], obj: T) =
+proc insert*[T](grid: var AHGrid[T], obj: T): GridHandle[T] =
   ## Add a value to this spacial grid
   let key = obj.pickCellIndex(grid)
   grid.maxScale = max(grid.maxScale, key.scale)
   grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
+  return GridHandle[T](key: key, obj: obj)
 
 iterator eachScale(grid: AHGrid): int32 =
   ## Yields each scale present in the grid
@@ -127,13 +135,11 @@ iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
   when defined(logSearchSpace):
     echo "Search space: ", searchSpace, " at ", x, ", ", y, " with radius ", radius
 
-proc remove*[T](grid: var AHGrid[T]; obj: T) =
+proc remove*[T](grid: var AHGrid[T]; handle: GridHandle[T]) =
   ## Removes a value
-  let key = obj.pickCellIndex(grid)
-  if grid.cells.hasKey(key):
-    let index = grid.cells[key].find(obj)
-    if index >= 0:
-      grid.cells[key].del(index)
+  let index = grid.cells[handle.key].find(handle.obj)
+  if index >= 0:
+    grid.cells[handle.key].del(index)
 
 proc clear*[T](grid: var AHGrid[T]) =
   ## Removes all values
