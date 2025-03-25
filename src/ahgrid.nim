@@ -140,9 +140,11 @@ iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
   when defined(logSearchSpace):
     var searchSpace = 0
 
+  let empty {.global.} = newSeq[T]()
+
   for scale in grid.eachScale:
     for key in eachCellIndex(x, y, radius, scale):
-      for obj in grid.cells.getOrDefault(key):
+      for obj in grid.cells.getOrDefault(key, empty):
         yield obj
 
       when defined(logSearchSpace):
