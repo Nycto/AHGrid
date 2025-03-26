@@ -36,9 +36,13 @@ type
     maxScale, minScale: int32
     cells: Table[CellIndex, seq[T]]
 
-proc newAHGrid*[T](minCellSize: int32 = 2): AHGrid[T] =
+proc newAHGrid*[T](initialSize: Positive = defaultInitialSize, minCellSize: int32 = 2): AHGrid[T] =
   ## Create a new AHGrid store
-  return AHGrid[T](minScale: minCellSize.nextPowerOfTwo.int32, maxScale: 0, cells: initTable[CellIndex, seq[T]]())
+  return AHGrid[T](
+    minScale: minCellSize.nextPowerOfTwo.int32,
+    maxScale: 0,
+    cells: initTable[CellIndex, seq[T]](initialSize)
+  )
 
 proc `=copy`*[T](a: var AHGrid[T], b: AHGrid[T]) {.error.}
 

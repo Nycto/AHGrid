@@ -133,5 +133,5 @@ suite "Adaptive Hashing Grid":
       check(chooseBucket(x.int32, 8) == expectedAtScale8.int32)
 
   test "Keys that fall on the very edge of a cell":
-    var grid = newAHGrid[GameObject](128)
+    var grid = newAHGrid[GameObject](minCellSize = 128)
     check(grid.pickCellIndex(81, 11, 78) == (-256'i32, -256'i32, 512'i32))
