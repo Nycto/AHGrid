@@ -1,0 +1,14 @@
+nimTitle	ahgrid	ahgrid.html	module src/ahgrid		0
+nim	SpatialObject	ahgrid.html#SpatialObject	type SpatialObject		20
+nim	GridHandle	ahgrid.html#GridHandle	object GridHandle		27
+nim	AHGrid	ahgrid.html#AHGrid	object AHGrid		34
+nim	hash	ahgrid.html#hash,CellIndex	proc hash(x: CellIndex): Hash		39
+nim	newAHGrid	ahgrid.html#newAHGrid,Positive,int32	proc newAHGrid[T](initialSize: Positive = defaultInitialSize; minCellSize: int32 = 2): AHGrid[\n    T]		42
+nim	`=copy`	ahgrid.html#=copy,AHGrid[T],AHGrid[T]	proc `=copy`[T](a: var AHGrid[T]; b: AHGrid[T])		50
+nim	`$`	ahgrid.html#$,AHGrid	proc `$`(grid: AHGrid): string		54
+nim	insert	ahgrid.html#insert,AHGrid[T],T	proc insert[T](grid: var AHGrid[T]; obj: T): GridHandle[T]		115
+nim	find	ahgrid.html#find.i,AHGrid[T],int32,int32,int32	iterator find[T](grid: AHGrid[T]; x, y, radius: int32): T		137
+nim	items	ahgrid.html#items.i,AHGrid[T]	iterator items[T](grid: AHGrid[T]): T		153
+nim	remove	ahgrid.html#remove,AHGrid[T],GridHandle[T]	proc remove[T](grid: var AHGrid[T]; handle: GridHandle[T])		159
+nim	update	ahgrid.html#update,AHGrid[T],GridHandle[T]	proc update[T](grid: var AHGrid[T]; handle: var GridHandle[T])		165
+nim	clear	ahgrid.html#clear,AHGrid[T]	proc clear[T](grid: var AHGrid[T])		173

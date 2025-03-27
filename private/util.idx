@@ -1,0 +1,2 @@
+nimTitle	util	private/util.html	module src/private/util		0
+nim	listAtKey	private/util.html#listAtKey.i,Table[K,seq[V]],K	iterator listAtKey[K, V](table: Table[K, seq[V]]; key: K): V		4
