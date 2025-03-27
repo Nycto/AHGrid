@@ -14,7 +14,7 @@ runnableExamples:
   for obj in grid.find(3, 4, 10):
     echo "Found object near point: ", obj
 
-import std/[tables, math, strformat], private/util
+import std/[tables, math, strformat, hashes], private/util
 
 type
   SpatialObject* = concept obj
@@ -35,6 +35,9 @@ type
     ## A 2d spacial index
     maxScale, minScale: int32
     cells: Table[CellIndex, seq[T]]
+
+proc hash*(x: CellIndex): Hash =
+  return x.yBucket !& x.xBucket !& x.scale
 
 proc newAHGrid*[T](initialSize: Positive = defaultInitialSize, minCellSize: int32 = 2): AHGrid[T] =
   ## Create a new AHGrid store

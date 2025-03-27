@@ -91,7 +91,7 @@ suite "Adaptive Hashing Grid":
     discard grid.insert(tree)
     discard grid.insert(bush)
 
-    check($grid == """AHGrid(100x100x8: @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], 16x16x32: @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], 4x4x8: @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], )""")
+    check($grid == """AHGrid(16x16x32: @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], 4x4x8: @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], 100x100x8: @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], )""")
 
   test "Changing the minimum cell size":
     var grid = newAHGrid[GameObject](128)
