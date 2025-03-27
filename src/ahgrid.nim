@@ -14,7 +14,7 @@ runnableExamples:
   for obj in grid.find(3, 4, 10):
     echo "Found object near point: ", obj
 
-import std/[tables, math, strformat]
+import std/[tables, math, strformat], private/util
 
 type
   SpatialObject* = concept obj
@@ -144,11 +144,9 @@ iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
   when defined(logSearchSpace):
     var searchSpace = 0
 
-  let empty {.global.} = newSeq[T]()
-
   for scale in grid.eachScale:
     for key in eachCellIndex(x, y, radius, scale):
-      for obj in grid.cells.getOrDefault(key, empty):
+      for obj in listAtKey(grid.cells, key):
         yield obj
 
       when defined(logSearchSpace):
