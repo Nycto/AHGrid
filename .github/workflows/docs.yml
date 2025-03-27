@@ -14,6 +14,8 @@ jobs:
 
     - run: apt-get install -y jq
 
+    - run: git config --global --add safe.directory "$(pwd)"
+
     - run: echo "PROJECT_NAME=$(nimble dump --json | jq -r '.name')" >> $GITHUB_ENV
 
     - run: nimble -y doc2 --out:docs --project "src/$PROJECT_NAME.nim"
