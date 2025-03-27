@@ -67,11 +67,6 @@ proc `$`*(grid: AHGrid): string =
 #       |               |               |               |               |
 #                               |                                 |
 
-proc oneIfNegative(x: int32): int32 {.inline.} =
-  ## Returns `1` if the value is positive, otherwise returns 0
-  const shiftBy = sizeof(x).int32 * 8 - 1
-  (x shr shiftBy) and 1
-
 proc chooseBucket(coord, scale: int32): int32 =
   ## Normalizes a coordinate onto a line where the only valid values are multiples of `scale`.
   ## This also offsets each coordinate by `scale/2` to ensure that an entity that falls on the edge of
@@ -81,11 +76,8 @@ proc chooseBucket(coord, scale: int32): int32 =
 
   let half = scale div 2
 
-  # We need to specifically adjust the index to handle negative coordinates. This
-  # looks funky because we also have to deal with the shifting root coordinates
-  let adjust = oneIfNegative(coord + half) * (-scale + 1)
-  # The above line is equivalent to:
-  # let adjust = if coord + half >= 0: 0'i32 else: -scale + 1
+  # We need to specifically adjust the index to handle negative coordinates
+  let adjust = if coord + half >= 0: 0'i32 else: -scale + 1
 
   result = (coord + half + adjust) div scale * scale - half
 
