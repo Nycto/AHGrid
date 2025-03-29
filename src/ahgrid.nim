@@ -141,8 +141,9 @@ iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
 
   for scale in grid.eachScale:
     for key in eachCellIndex(x, y, radius, scale):
-      for obj in listAtKey(grid.cells, key):
-        yield obj
+      withValue(grid.cells, key, cell):
+        for obj in cell:
+          yield obj
 
       when defined(logSearchSpace):
         searchSpace += 1
