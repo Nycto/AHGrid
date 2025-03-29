@@ -12,7 +12,11 @@ proc makeEntries(num: int, posRange: Slice[int], sizeRange: Slice[int] = 1..1000
       height: rand.rand(sizeRange).int32
     )
 
-for num in [10, 100, 1000]:
+const maxTestCount {.intDefine.} = 1_000
+
+var num = 10
+
+while num <= maxTestCount:
   for spread in [1_000, 10_000, 100_000, 1_000_000]:
     var entries = makeEntries(num, -spread..spread)
     for dist in [1'i32, 10, 100, 1_000]:
@@ -24,3 +28,5 @@ for num in [10, 100, 1000]:
         for me in entries:
           for other in space.find(me.x, me.y, dist):
             keep(other)
+
+  num *= 10
