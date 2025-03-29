@@ -18,7 +18,7 @@ suite "Adaptive Hashing Grid":
   let bush = obj("Bush", x = 100, y = 100, width = 5, height = 5)
   let mountain = obj("Mountain", x = -200, y = -200, width = 500, height = 500)
 
-  test "Insertion and Query":
+  test "Insertion and Query within a radius":
     var grid = newAHGrid[GameObject]()
 
     discard grid.insert(rock)
@@ -32,6 +32,17 @@ suite "Adaptive Hashing Grid":
     check(grid.find(6, 6, 2).toSeq.mapIt(it.name) == @[ "Rock" ])
 
     check(grid.find(15, 15, 10).toSeq.mapIt(it.name) == @[ "Rock", "Tree" ])
+
+  test "Query within a rectangle":
+    var grid = newAHGrid[GameObject]()
+
+    discard grid.insert(rock)
+    discard grid.insert(tree)
+    discard grid.insert(bush)
+
+    check(grid.find(0, 0, 1, 1).toSeq.len == 0)
+
+    check(grid.find(3, 3, 7, 7).toSeq.mapIt(it.name) == @[ "Rock" ])
 
   test "Iterating through all values":
     var grid = newAHGrid[GameObject]()

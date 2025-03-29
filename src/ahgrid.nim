@@ -125,22 +125,22 @@ iterator eachScale(grid: AHGrid): int32 =
     yield scale
     scale *= 2
 
-iterator eachCellIndex(x, y, radius, scale: int32): CellIndex =
+iterator eachCellIndex(x1, y1, x2, y2, scale: int32): CellIndex =
   ## Yields each cell key within a given radius of a point at the given scale
-  let (xLow, xHigh) = (chooseBucket(x - radius, scale), chooseBucket(x + radius, scale))
-  let (yLow, yHigh)= (chooseBucket(y - radius, scale), chooseBucket(y + radius, scale))
+  let (xLow, xHigh) = (chooseBucket(x1, scale), chooseBucket(x2, scale))
+  let (yLow, yHigh)= (chooseBucket(y1, scale), chooseBucket(y2, scale))
 
   for x in countup(xLow, xHigh, scale):
     for y in countup(yLow, yHigh, scale):
       yield (x, y, scale)
 
-iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
-  ## Finds all the values within a given radius of a point
+iterator find*[T](grid: AHGrid[T]; x1, y1, x2, y2: int32): T =
+  ## Finds all the values within a given rectangle
   when defined(logSearchSpace):
     var searchSpace = 0
 
   for scale in grid.eachScale:
-    for key in eachCellIndex(x, y, radius, scale):
+    for key in eachCellIndex(x1, y1, x2, y2, scale):
       withValue(grid.cells, key, cell):
         for obj in cell:
           yield obj
@@ -150,6 +150,11 @@ iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
 
   when defined(logSearchSpace):
     echo "Search space: ", searchSpace, " at ", x, ", ", y, " with radius ", radius
+
+iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
+  ## Finds all the values that are approximately within a given radius of a point
+  for elem in find(grid, x - radius, y - radius, x + radius, y + radius):
+    yield elem
 
 iterator items*[T](grid: AHGrid[T]): T =
   ## Iterates all values in this grid
