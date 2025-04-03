@@ -113,6 +113,7 @@
     <ul class="simple simple-toc-section">
       <ul class="simple nested-toc-section">find
   <li><a class="reference" href="#find.i%2CAHGrid%5BT%5D%2Cint32%2Cint32%2Cint32" title="find[T](grid: AHGrid[T]; x, y, radius: int32): T">find[T](grid: AHGrid[T]; x, y, radius: int32): T</a></li>
+<li><a class="reference" href="#find.i%2CAHGrid%5BT%5D%2Cint32%2Cint32%2Cint32%2Cint32" title="find[T](grid: AHGrid[T]; x1, y1, x2, y2: int32): T">find[T](grid: AHGrid[T]; x1, y1, x2, y2: int32): T</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">items
@@ -287,7 +288,15 @@
   <dt><pre><span class="Keyword">iterator</span> <a href="#find.i%2CAHGrid%5BT%5D%2Cint32%2Cint32%2Cint32"><span class="Identifier">find</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">x</span><span class="Other">,</span> <span class="Identifier">y</span><span class="Other">,</span> <span class="Identifier">radius</span><span class="Other">:</span> <span class="Identifier">int32</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
   <dd>
     
-    Finds all the values within a given radius of a point
+    Finds all the values that are approximately within a given radius of a point
+    
+  </dd>
+</div>
+<div id="find.i,AHGrid[T],int32,int32,int32,int32">
+  <dt><pre><span class="Keyword">iterator</span> <a href="#find.i%2CAHGrid%5BT%5D%2Cint32%2Cint32%2Cint32%2Cint32"><span class="Identifier">find</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">x1</span><span class="Other">,</span> <span class="Identifier">y1</span><span class="Other">,</span> <span class="Identifier">x2</span><span class="Other">,</span> <span class="Identifier">y2</span><span class="Other">:</span> <span class="Identifier">int32</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
+  <dd>
+    
+    Finds all the values within a given rectangle
     
   </dd>
 </div>
@@ -314,7 +323,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2025-03-29 02:38:18 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2025-04-03 03:54:07 UTC</small>
       </div>
     </div>
   </div>
