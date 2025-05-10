@@ -32,7 +32,7 @@ type
 
   CellIndex = tuple[xBucket, yBucket, scale: int32]
 
-  AHGrid*[T: SpatialObject] {.requiresInit.} = object ## A 2d spacial index
+  AHGrid*[T] {.requiresInit.} = object ## A 2d spacial index
     maxScale, minScale: int32
     cells: Table[CellIndex, seq[T]]
 
@@ -126,11 +126,17 @@ proc insertAtKey[T](grid: var AHGrid[T], key: CellIndex, obj: T) =
   grid.maxScale = max(grid.maxScale, key.scale)
   grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
 
-proc insert*[T](grid: var AHGrid[T], obj: T): GridHandle[T] =
+proc insert*[T](grid: var AHGrid[T], value: T, space: SpatialObject): GridHandle[T] =
   ## Add a value to this spacial grid
-  let key = obj.pickCellIndex(grid)
-  insertAtKey(grid, key, obj)
-  return GridHandle[T](key: key, obj: obj)
+  let key = space.pickCellIndex(grid)
+  insertAtKey(grid, key, value)
+  return GridHandle[T](key: key, obj: value)
+
+proc insert*[T: SpatialObject](
+    grid: var AHGrid[T], value: T
+): GridHandle[T] {.inline.} =
+  ## Add a value to this spacial grid
+  insert(grid, value, value)
 
 iterator eachScale(grid: AHGrid): int32 =
   ## Yields each scale present in the grid
@@ -182,13 +188,19 @@ proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T]) =
   if index >= 0:
     grid.cells[handle.key].del(index)
 
-proc update*[T](grid: var AHGrid[T], handle: var GridHandle[T]) =
-  ## Updates the spatial indexing for an object
-  let newKey = handle.obj.pickCellIndex(grid)
+proc update*[T](grid: var AHGrid[T], handle: var GridHandle[T], space: SpatialObject) =
+  ## Updates the spatial indexing for an object using the specified spatial information
+  let newKey = space.pickCellIndex(grid)
   if newKey != handle.key:
     grid.remove(handle)
     insertAtKey(grid, newKey, handle.obj)
     handle.key = newKey
+
+proc update*[T: SpatialObject](
+    grid: var AHGrid[T], handle: var GridHandle[T]
+) {.inline.} =
+  ## Updates the spatial indexing for an object
+  update(grid, handle, handle.obj)
 
 proc clear*[T](grid: var AHGrid[T]) =
   ## Removes all values

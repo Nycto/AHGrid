@@ -148,3 +148,16 @@ suite "Adaptive Hashing Grid":
   test "Keys that fall on the very edge of a cell":
     var grid = newAHGrid[GameObject](minCellSize = 128)
     check(grid.pickCellIndex(81, 11, 78) == (-256'i32, -256'i32, 512'i32))
+
+  test "Inserting values that don't have their own spatial info":
+    var grid = newAHGrid[string]()
+
+    var rockHandle = grid.insert("Rocks", rock)
+    discard grid.insert("Trees", tree)
+    discard grid.insert("Bushes", bush)
+
+    check(grid.find(15, 15, 10).toSeq == @["Rocks", "Trees"])
+
+    grid.update(rockHandle, bush)
+
+    check(grid.find(15, 15, 10).toSeq == @["Trees"])
