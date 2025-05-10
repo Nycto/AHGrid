@@ -17,12 +17,13 @@ runnableExamples:
 import std/[tables, math, strformat, hashes], private/util
 
 type
-  SpatialObject* = concept obj
-    ## A value that can be stored in a 2d AHGrid
-    obj.x is int32
-    obj.y is int32
-    obj.width is int32
-    obj.height is int32
+  SpatialObject* =
+    concept obj
+        ## A value that can be stored in a 2d AHGrid
+        obj.x is int32
+        obj.y is int32
+        obj.width is int32
+        obj.height is int32
 
   GridHandle*[T] = object
     ## A handle for a value that can be stored in a AHGrid -- used to update that value
@@ -31,25 +32,27 @@ type
 
   CellIndex = tuple[xBucket, yBucket, scale: int32]
 
-  AHGrid*[T: SpatialObject] {.requiresInit.} = object
-    ## A 2d spacial index
+  AHGrid*[T: SpatialObject] {.requiresInit.} = object ## A 2d spacial index
     maxScale, minScale: int32
     cells: Table[CellIndex, seq[T]]
 
 proc hash*(x: CellIndex): Hash =
   return x.yBucket !& x.xBucket !& x.scale
 
-proc newAHGrid*[T](initialSize: Positive = defaultInitialSize, minCellSize: int32 = 2): AHGrid[T] =
+proc newAHGrid*[T](
+    initialSize: Positive = defaultInitialSize, minCellSize: int32 = 2
+): AHGrid[T] =
   ## Create a new AHGrid store
   return AHGrid[T](
     minScale: minCellSize.nextPowerOfTwo.int32,
     maxScale: 0,
-    cells: initTable[CellIndex, seq[T]](initialSize)
+    cells: initTable[CellIndex, seq[T]](initialSize),
   )
 
 proc `=copy`*[T](a: var AHGrid[T], b: AHGrid[T]) {.error.}
 
-proc `$`(index: CellIndex): string = fmt"{index.xBucket}x{index.yBucket}x{index.scale}"
+proc `$`(index: CellIndex): string =
+  fmt"{index.xBucket}x{index.yBucket}x{index.scale}"
 
 proc `$`*(grid: AHGrid): string =
   result = "AHGrid("
@@ -77,7 +80,11 @@ proc chooseBucket(coord, scale: int32): int32 =
   let half = scale div 2
 
   # We need to specifically adjust the index to handle negative coordinates
-  let adjust = if coord + half >= 0: 0'i32 else: -scale + 1
+  let adjust =
+    if coord + half >= 0:
+      0'i32
+    else:
+      -scale + 1
 
   result = (coord + half + adjust) div scale * scale - half
 
@@ -88,7 +95,8 @@ proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
   var scale = max(dimen.int.nextPowerOfTwo.int32, grid.minScale)
 
   while true:
-    result = (xBucket: x.chooseBucket(scale), yBucket: y.chooseBucket(scale), scale: scale)
+    result =
+      (xBucket: x.chooseBucket(scale), yBucket: y.chooseBucket(scale), scale: scale)
 
     # If the entity fits completely into the cell we've picked, we're done.
     if x + dimen < result.xBucket + scale and y + dimen < result.yBucket + scale:
@@ -100,8 +108,14 @@ proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
   # The resulting cell should completely contain the object being stored
   assert(x >= result.xBucket, fmt"{x} >= {result.xBucket}")
   assert(y >= result.yBucket, fmt"{y} >= {result.yBucket}")
-  assert(x + dimen <= result.xBucket + result.scale, fmt"{x} + {dimen} <= {result.xBucket} + {result.scale}")
-  assert(y + dimen <= result.yBucket + result.scale, fmt"{y} + {dimen} <= {result.yBucket} + {result.scale}")
+  assert(
+    x + dimen <= result.xBucket + result.scale,
+    fmt"{x} + {dimen} <= {result.xBucket} + {result.scale}",
+  )
+  assert(
+    y + dimen <= result.yBucket + result.scale,
+    fmt"{y} + {dimen} <= {result.yBucket} + {result.scale}",
+  )
 
 proc pickCellIndex(obj: SpatialObject, grid: AHGrid): CellIndex =
   ## Calculates the cell that an object should be stored in
@@ -128,13 +142,13 @@ iterator eachScale(grid: AHGrid): int32 =
 iterator eachCellIndex(x1, y1, x2, y2, scale: int32): CellIndex =
   ## Yields each cell key within a given radius of a point at the given scale
   let (xLow, xHigh) = (chooseBucket(x1, scale), chooseBucket(x2, scale))
-  let (yLow, yHigh)= (chooseBucket(y1, scale), chooseBucket(y2, scale))
+  let (yLow, yHigh) = (chooseBucket(y1, scale), chooseBucket(y2, scale))
 
   for x in countup(xLow, xHigh, scale):
     for y in countup(yLow, yHigh, scale):
       yield (x, y, scale)
 
-iterator find*[T](grid: AHGrid[T]; x1, y1, x2, y2: int32): T =
+iterator find*[T](grid: AHGrid[T], x1, y1, x2, y2: int32): T =
   ## Finds all the values within a given rectangle
   when defined(logSearchSpace):
     var searchSpace = 0
@@ -151,7 +165,7 @@ iterator find*[T](grid: AHGrid[T]; x1, y1, x2, y2: int32): T =
   when defined(logSearchSpace):
     echo "Search space: ", searchSpace, " at ", x, ", ", y, " with radius ", radius
 
-iterator find*[T](grid: AHGrid[T]; x, y, radius: int32): T =
+iterator find*[T](grid: AHGrid[T], x, y, radius: int32): T =
   ## Finds all the values that are approximately within a given radius of a point
   for elem in find(grid, x - radius, y - radius, x + radius, y + radius):
     yield elem
@@ -162,13 +176,13 @@ iterator items*[T](grid: AHGrid[T]): T =
     for obj in cell:
       yield obj
 
-proc remove*[T](grid: var AHGrid[T]; handle: GridHandle[T]) =
+proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T]) =
   ## Removes a value
   let index = grid.cells[handle.key].find(handle.obj)
   if index >= 0:
     grid.cells[handle.key].del(index)
 
-proc update*[T](grid: var AHGrid[T]; handle: var GridHandle[T]) =
+proc update*[T](grid: var AHGrid[T], handle: var GridHandle[T]) =
   ## Updates the spatial indexing for an object
   let newKey = handle.obj.pickCellIndex(grid)
   if newKey != handle.key:

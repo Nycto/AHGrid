@@ -1,18 +1,17 @@
 import std/[unittest, math, sequtils, algorithm]
 import ahgrid {.all.}
 
-type
-  GameObject = ref object
-    name*: string
-    x*, y*, width*, height*: int32
+type GameObject = ref object
+  name*: string
+  x*, y*, width*, height*: int32
 
-proc `$`*(obj: GameObject): auto = $obj[]
+proc `$`*(obj: GameObject): auto =
+  $obj[]
 
-proc obj(name: string; x, y, width, height: int32): auto =
+proc obj(name: string, x, y, width, height: int32): auto =
   GameObject(name: name, x: x, y: y, width: width, height: height)
 
 suite "Adaptive Hashing Grid":
-
   let rock = obj("Rock", x = 5, y = 5, width = 3, height = 3)
   let tree = obj("Tree", x = 20, y = 20, width = 15, height = 15)
   let bush = obj("Bush", x = 100, y = 100, width = 5, height = 5)
@@ -27,11 +26,11 @@ suite "Adaptive Hashing Grid":
 
     check(grid.find(0, 0, 1).toSeq.len == 0)
 
-    check(grid.find(5, 5, 1).toSeq.mapIt(it.name) == @[ "Rock" ])
+    check(grid.find(5, 5, 1).toSeq.mapIt(it.name) == @["Rock"])
 
-    check(grid.find(6, 6, 2).toSeq.mapIt(it.name) == @[ "Rock" ])
+    check(grid.find(6, 6, 2).toSeq.mapIt(it.name) == @["Rock"])
 
-    check(grid.find(15, 15, 10).toSeq.mapIt(it.name) == @[ "Rock", "Tree" ])
+    check(grid.find(15, 15, 10).toSeq.mapIt(it.name) == @["Rock", "Tree"])
 
   test "Query within a rectangle":
     var grid = newAHGrid[GameObject]()
@@ -42,7 +41,7 @@ suite "Adaptive Hashing Grid":
 
     check(grid.find(0, 0, 1, 1).toSeq.len == 0)
 
-    check(grid.find(3, 3, 7, 7).toSeq.mapIt(it.name) == @[ "Rock" ])
+    check(grid.find(3, 3, 7, 7).toSeq.mapIt(it.name) == @["Rock"])
 
   test "Iterating through all values":
     var grid = newAHGrid[GameObject]()
@@ -53,7 +52,7 @@ suite "Adaptive Hashing Grid":
     discard grid.insert(bush)
     discard grid.insert(mountain)
 
-    check(grid.toSeq.mapIt(it.name).sorted == @[ "Bush", "Mountain", "Rock", "Tree" ])
+    check(grid.toSeq.mapIt(it.name).sorted == @["Bush", "Mountain", "Rock", "Tree"])
 
   test "Removal":
     var grid = newAHGrid[GameObject]()
@@ -102,7 +101,10 @@ suite "Adaptive Hashing Grid":
     discard grid.insert(tree)
     discard grid.insert(bush)
 
-    check($grid == """AHGrid(16x16x32: @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], 4x4x8: @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], 100x100x8: @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], )""")
+    check(
+      $grid ==
+        """AHGrid(16x16x32: @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], 4x4x8: @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], 100x100x8: @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], )"""
+    )
 
   test "Changing the minimum cell size":
     var grid = newAHGrid[GameObject](128)
@@ -116,25 +118,25 @@ suite "Adaptive Hashing Grid":
 
   test "Normalized coordinates algorithm":
     var coordinates = [
-      (x:  9, expectedAtScale2:  9, expectedAtScale4:   6, expectedAtScale8:    4),
-      (x:  8, expectedAtScale2:  7, expectedAtScale4:   6, expectedAtScale8:    4),
-      (x:  7, expectedAtScale2:  7, expectedAtScale4:   6, expectedAtScale8:    4),
-      (x:  6, expectedAtScale2:  5, expectedAtScale4:   6, expectedAtScale8:    4),
-      (x:  5, expectedAtScale2:  5, expectedAtScale4:   2, expectedAtScale8:    4),
-      (x:  4, expectedAtScale2:  3, expectedAtScale4:   2, expectedAtScale8:    4),
-      (x:  3, expectedAtScale2:  3, expectedAtScale4:   2, expectedAtScale8:   -4),
-      (x:  2, expectedAtScale2:  1, expectedAtScale4:   2, expectedAtScale8:   -4),
-      (x:  1, expectedAtScale2:  1, expectedAtScale4:  -2, expectedAtScale8:   -4),
-      (x:  0, expectedAtScale2: -1, expectedAtScale4:  -2, expectedAtScale8:   -4),
-      (x: -1, expectedAtScale2: -1, expectedAtScale4:  -2, expectedAtScale8:   -4),
-      (x: -2, expectedAtScale2: -3, expectedAtScale4:  -2, expectedAtScale8:   -4),
-      (x: -3, expectedAtScale2: -3, expectedAtScale4:  -6, expectedAtScale8:   -4),
-      (x: -4, expectedAtScale2: -5, expectedAtScale4:  -6, expectedAtScale8:   -4),
-      (x: -5, expectedAtScale2: -5, expectedAtScale4:  -6, expectedAtScale8:  -12),
-      (x: -6, expectedAtScale2: -7, expectedAtScale4:  -6, expectedAtScale8:  -12),
-      (x: -7, expectedAtScale2: -7, expectedAtScale4: -10, expectedAtScale8:  -12),
-      (x: -8, expectedAtScale2: -9, expectedAtScale4: -10, expectedAtScale8:  -12),
-      (x: -9, expectedAtScale2: -9, expectedAtScale4: -10, expectedAtScale8:  -12),
+      (x: 9, expectedAtScale2: 9, expectedAtScale4: 6, expectedAtScale8: 4),
+      (x: 8, expectedAtScale2: 7, expectedAtScale4: 6, expectedAtScale8: 4),
+      (x: 7, expectedAtScale2: 7, expectedAtScale4: 6, expectedAtScale8: 4),
+      (x: 6, expectedAtScale2: 5, expectedAtScale4: 6, expectedAtScale8: 4),
+      (x: 5, expectedAtScale2: 5, expectedAtScale4: 2, expectedAtScale8: 4),
+      (x: 4, expectedAtScale2: 3, expectedAtScale4: 2, expectedAtScale8: 4),
+      (x: 3, expectedAtScale2: 3, expectedAtScale4: 2, expectedAtScale8: -4),
+      (x: 2, expectedAtScale2: 1, expectedAtScale4: 2, expectedAtScale8: -4),
+      (x: 1, expectedAtScale2: 1, expectedAtScale4: -2, expectedAtScale8: -4),
+      (x: 0, expectedAtScale2: -1, expectedAtScale4: -2, expectedAtScale8: -4),
+      (x: -1, expectedAtScale2: -1, expectedAtScale4: -2, expectedAtScale8: -4),
+      (x: -2, expectedAtScale2: -3, expectedAtScale4: -2, expectedAtScale8: -4),
+      (x: -3, expectedAtScale2: -3, expectedAtScale4: -6, expectedAtScale8: -4),
+      (x: -4, expectedAtScale2: -5, expectedAtScale4: -6, expectedAtScale8: -4),
+      (x: -5, expectedAtScale2: -5, expectedAtScale4: -6, expectedAtScale8: -12),
+      (x: -6, expectedAtScale2: -7, expectedAtScale4: -6, expectedAtScale8: -12),
+      (x: -7, expectedAtScale2: -7, expectedAtScale4: -10, expectedAtScale8: -12),
+      (x: -8, expectedAtScale2: -9, expectedAtScale4: -10, expectedAtScale8: -12),
+      (x: -9, expectedAtScale2: -9, expectedAtScale4: -10, expectedAtScale8: -12),
     ]
 
     for (x, expectedAtScale2, expectedAtScale4, expectedAtScale8) in coordinates:
