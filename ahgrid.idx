@@ -1,16 +1,20 @@
 nimTitle	ahgrid	ahgrid.html	module src/ahgrid		0
 nim	SpatialObject	ahgrid.html#SpatialObject	type SpatialObject		20
-nim	GridHandle	ahgrid.html#GridHandle	object GridHandle		27
-nim	AHGrid	ahgrid.html#AHGrid	object AHGrid		34
+nim	GridHandle	ahgrid.html#GridHandle	object GridHandle		28
+nim	AHGrid	ahgrid.html#AHGrid	object AHGrid		35
 nim	hash	ahgrid.html#hash,CellIndex	proc hash(x: CellIndex): Hash		39
 nim	newAHGrid	ahgrid.html#newAHGrid,Positive,int32	proc newAHGrid[T](initialSize: Positive = defaultInitialSize; minCellSize: int32 = 2): AHGrid[\n    T]		42
-nim	`=copy`	ahgrid.html#=copy,AHGrid[T],AHGrid[T]	proc `=copy`[T](a: var AHGrid[T]; b: AHGrid[T])		50
-nim	`$`	ahgrid.html#$,AHGrid	proc `$`(grid: AHGrid): string		54
-nim	insert	ahgrid.html#insert,AHGrid[T],T	proc insert[T](grid: var AHGrid[T]; obj: T): GridHandle[T]		115
-nim	find	ahgrid.html#find.i,AHGrid[T],int32,int32,int32,int32	iterator find[T](grid: AHGrid[T]; x1, y1, x2, y2: int32): T		137
-nim	find	ahgrid.html#find.i,AHGrid[T],int32,int32,int32	iterator find[T](grid: AHGrid[T]; x, y, radius: int32): T		154
-nim	items	ahgrid.html#items.i,AHGrid[T]	iterator items[T](grid: AHGrid[T]): T		159
-nim	remove	ahgrid.html#remove,AHGrid[T],GridHandle[T]	proc remove[T](grid: var AHGrid[T]; handle: GridHandle[T])		165
-nim	update	ahgrid.html#update,AHGrid[T],GridHandle[T]	proc update[T](grid: var AHGrid[T]; handle: var GridHandle[T])		171
-nim	clear	ahgrid.html#clear,AHGrid[T]	proc clear[T](grid: var AHGrid[T])		179
-nimgrp	find	ahgrid.html#find-iterators-all	iterator		137
+nim	`=copy`	ahgrid.html#=copy,AHGrid[T],AHGrid[T]	proc `=copy`[T](a: var AHGrid[T]; b: AHGrid[T])		52
+nim	`$`	ahgrid.html#$,AHGrid	proc `$`(grid: AHGrid): string		57
+nim	insert	ahgrid.html#insert,AHGrid[T],T,SpatialObject	proc insert[T](grid: var AHGrid[T]; value: T; space: SpatialObject): GridHandle[T]		129
+nim	insert	ahgrid.html#insert,AHGrid[T: SpatialObject],T	proc insert[T: SpatialObject](grid: var AHGrid[T]; value: T): GridHandle[T]		135
+nim	find	ahgrid.html#find.i,AHGrid[T],int32,int32,int32,int32	iterator find[T](grid: AHGrid[T]; x1, y1, x2, y2: int32): T		157
+nim	find	ahgrid.html#find.i,AHGrid[T],int32,int32,int32	iterator find[T](grid: AHGrid[T]; x, y, radius: int32): T		174
+nim	items	ahgrid.html#items.i,AHGrid[T]	iterator items[T](grid: AHGrid[T]): T		179
+nim	remove	ahgrid.html#remove,AHGrid[T],GridHandle[T]	proc remove[T](grid: var AHGrid[T]; handle: GridHandle[T])		185
+nim	update	ahgrid.html#update,AHGrid[T],GridHandle[T],SpatialObject	proc update[T](grid: var AHGrid[T]; handle: var GridHandle[T]; space: SpatialObject)		191
+nim	update	ahgrid.html#update,AHGrid[T: SpatialObject],GridHandle[T: SpatialObject]	proc update[T: SpatialObject](grid: var AHGrid[T]; handle: var GridHandle[T])		199
+nim	clear	ahgrid.html#clear,AHGrid[T]	proc clear[T](grid: var AHGrid[T])		205
+nimgrp	insert	ahgrid.html#insert-procs-all	proc		129
+nimgrp	update	ahgrid.html#update-procs-all	proc		191
+nimgrp	find	ahgrid.html#find-iterators-all	iterator		157

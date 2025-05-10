@@ -86,7 +86,8 @@
 
 </ul>
 <ul class="simple nested-toc-section">insert
-  <li><a class="reference" href="#insert%2CAHGrid%5BT%5D%2CT" title="insert[T](grid: var AHGrid[T]; obj: T): GridHandle[T]">insert[T](grid: var AHGrid[T]; obj: T): GridHandle[T]</a></li>
+  <li><a class="reference" href="#insert%2CAHGrid%5BT%3A%20SpatialObject%5D%2CT" title="insert[T: SpatialObject](grid: var AHGrid[T]; value: T): GridHandle[T]">insert[T: SpatialObject](grid: var AHGrid[T]; value: T): GridHandle[T]</a></li>
+<li><a class="reference" href="#insert%2CAHGrid%5BT%5D%2CT%2CSpatialObject" title="insert[T](grid: var AHGrid[T]; value: T; space: SpatialObject): GridHandle[T]">insert[T](grid: var AHGrid[T]; value: T; space: SpatialObject): GridHandle[T]</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">newAHGrid
@@ -100,7 +101,8 @@
 
 </ul>
 <ul class="simple nested-toc-section">update
-  <li><a class="reference" href="#update%2CAHGrid%5BT%5D%2CGridHandle%5BT%5D" title="update[T](grid: var AHGrid[T]; handle: var GridHandle[T])">update[T](grid: var AHGrid[T]; handle: var GridHandle[T])</a></li>
+  <li><a class="reference" href="#update%2CAHGrid%5BT%3A%20SpatialObject%5D%2CGridHandle%5BT%3A%20SpatialObject%5D" title="update[T: SpatialObject](grid: var AHGrid[T]; handle: var GridHandle[T])">update[T: SpatialObject](grid: var AHGrid[T]; handle: var GridHandle[T])</a></li>
+<li><a class="reference" href="#update%2CAHGrid%5BT%5D%2CGridHandle%5BT%5D%2CSpatialObject" title="update[T](grid: var AHGrid[T]; handle: var GridHandle[T]; space: SpatialObject)">update[T](grid: var AHGrid[T]; handle: var GridHandle[T]; space: SpatialObject)</a></li>
 
 </ul>
 
@@ -233,8 +235,18 @@
 
 </div>
 <div id="insert-procs-all">
-  <div id="insert,AHGrid[T],T">
-  <dt><pre><span class="Keyword">proc</span> <a href="#insert%2CAHGrid%5BT%5D%2CT"><span class="Identifier">insert</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">obj</span><span class="Other">:</span> <span class="Identifier">T</span><span class="Other">)</span><span class="Other">:</span> <a href="ahgrid.html#GridHandle"><span class="Identifier">GridHandle</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span></pre></dt>
+  <div id="insert,AHGrid[T: SpatialObject],T">
+  <dt><pre><span class="Keyword">proc</span> <a href="#insert%2CAHGrid%5BT%3A%20SpatialObject%5D%2CT"><span class="Identifier">insert</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <a href="ahgrid.html#SpatialObject"><span class="Identifier">SpatialObject</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <span class="Identifier">T</span><span class="Other">)</span><span class="Other">:</span> <a href="ahgrid.html#GridHandle"><span class="Identifier">GridHandle</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span> {.
+    <span class="Identifier">inline</span>.}</pre></dt>
+  <dd>
+    
+    Add a value to this spacial grid
+    
+  </dd>
+</div>
+<div id="insert,AHGrid[T],T,SpatialObject">
+  <dt><pre><span class="Keyword">proc</span> <a href="#insert%2CAHGrid%5BT%5D%2CT%2CSpatialObject"><span class="Identifier">insert</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <span class="Identifier">T</span><span class="Other">;</span> <span class="Identifier">space</span><span class="Other">:</span> <a href="ahgrid.html#SpatialObject"><span class="Identifier">SpatialObject</span></a><span class="Other">)</span><span class="Other">:</span> <a href="ahgrid.html#GridHandle"><span class="Identifier">GridHandle</span></a><span class="Other">[</span>
+    <span class="Identifier">T</span><span class="Other">]</span></pre></dt>
   <dd>
     
     Add a value to this spacial grid
@@ -267,11 +279,21 @@
 
 </div>
 <div id="update-procs-all">
-  <div id="update,AHGrid[T],GridHandle[T]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#update%2CAHGrid%5BT%5D%2CGridHandle%5BT%5D"><span class="Identifier">update</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">handle</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#GridHandle"><span class="Identifier">GridHandle</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span></pre></dt>
+  <div id="update,AHGrid[T: SpatialObject],GridHandle[T: SpatialObject]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#update%2CAHGrid%5BT%3A%20SpatialObject%5D%2CGridHandle%5BT%3A%20SpatialObject%5D"><span class="Identifier">update</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <a href="ahgrid.html#SpatialObject"><span class="Identifier">SpatialObject</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">handle</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#GridHandle"><span class="Identifier">GridHandle</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span> {.
+    <span class="Identifier">inline</span>.}</pre></dt>
   <dd>
     
     Updates the spatial indexing for an object
+    
+  </dd>
+</div>
+<div id="update,AHGrid[T],GridHandle[T],SpatialObject">
+  <dt><pre><span class="Keyword">proc</span> <a href="#update%2CAHGrid%5BT%5D%2CGridHandle%5BT%5D%2CSpatialObject"><span class="Identifier">update</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">handle</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#GridHandle"><span class="Identifier">GridHandle</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span>
+               <span class="Identifier">space</span><span class="Other">:</span> <a href="ahgrid.html#SpatialObject"><span class="Identifier">SpatialObject</span></a><span class="Other">)</span></pre></dt>
+  <dd>
+    
+    Updates the spatial indexing for an object using the specified spatial information
     
   </dd>
 </div>
@@ -323,7 +345,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2025-04-03 03:54:07 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2025-05-10 17:19:23 UTC</small>
       </div>
     </div>
   </div>
