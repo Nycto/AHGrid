@@ -72,12 +72,12 @@ suite "Adaptive Hashing Grid":
     var handle = grid.insert(fern)
     check(grid.find(5, 5, 1).toSeq.len == 1)
 
-    grid.update(handle)
+    handle.update()
     check(grid.find(5, 5, 1).toSeq.len == 1)
     check(grid.find(200, 5, 10).toSeq.len == 0)
 
     fern.x = 202
-    grid.update(handle)
+    handle.update()
     check(grid.find(5, 5, 1).toSeq.len == 0)
     check(grid.find(200, 5, 10).toSeq.len == 1)
 
@@ -158,7 +158,7 @@ suite "Adaptive Hashing Grid":
 
     check(grid.find(15, 15, 10).toSeq == @["Rocks", "Trees"])
 
-    grid.update(rockHandle, bush)
+    rockHandle.update(bush)
 
     check(grid.find(15, 15, 10).toSeq == @["Trees"])
 

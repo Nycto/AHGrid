@@ -200,19 +200,17 @@ proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T]) =
   except KeyError:
     discard
 
-proc update*[T](grid: var AHGrid[T], handle: var GridHandle[T], space: SpatialObject) =
+proc update*[T](handle: var GridHandle[T], space: SpatialObject) =
   ## Updates the spatial indexing for an object using the specified spatial information
-  let newKey = space.pickCellIndex(grid)
+  let newKey = space.pickCellIndex(handle.grid[])
   if newKey != handle.key:
-    grid.remove(handle)
-    insertAtKey(grid, newKey, handle.obj)
+    handle.grid[].remove(handle)
+    insertAtKey(handle.grid[], newKey, handle.obj)
     handle.key = newKey
 
-proc update*[T: SpatialObject](
-    grid: var AHGrid[T], handle: var GridHandle[T]
-) {.inline.} =
+proc update*[T: SpatialObject](handle: var GridHandle[T]) {.inline.} =
   ## Updates the spatial indexing for an object
-  update(grid, handle, handle.obj)
+  update(handle, handle.obj)
 
 proc clear*[T](grid: var AHGrid[T]) =
   ## Removes all values
