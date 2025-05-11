@@ -161,3 +161,10 @@ suite "Adaptive Hashing Grid":
     grid.update(rockHandle, bush)
 
     check(grid.find(15, 15, 10).toSeq == @["Trees"])
+
+  test "Destroying a handle should delete a value":
+    var grid = newAHGrid[GameObject]()
+    block:
+      let handle {.used.} = grid.insert(rock)
+      check(grid.find(5, 5, 1).toSeq.mapIt(it.name) == @["Rock"])
+    check(grid.find(5, 5, 1).toSeq.len == 0)

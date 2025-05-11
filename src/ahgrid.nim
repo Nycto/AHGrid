@@ -29,12 +29,21 @@ type
     ## A handle for a value that can be stored in a AHGrid -- used to update that value
     obj: T
     key: CellIndex
+    grid: ptr AHGrid[T]
 
   CellIndex = tuple[xBucket, yBucket, scale: int32]
 
   AHGrid*[T] {.requiresInit.} = object ## A 2d spacial index
     maxScale, minScale: int32
     cells: Table[CellIndex, seq[T]]
+
+proc `=copy`[T](a: var GridHandle[T], b: GridHandle[T]) {.error.}
+
+proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T])
+
+proc `=destroy`[T](handle: var GridHandle[T]) =
+  if handle.grid != nil:
+    handle.grid[].remove(handle)
 
 proc hash*(x: CellIndex): Hash =
   return x.yBucket !& x.xBucket !& x.scale
@@ -130,7 +139,7 @@ proc insert*[T](grid: var AHGrid[T], value: T, space: SpatialObject): GridHandle
   ## Add a value to this spacial grid
   let key = space.pickCellIndex(grid)
   insertAtKey(grid, key, value)
-  return GridHandle[T](key: key, obj: value)
+  return GridHandle[T](key: key, obj: value, grid: addr grid)
 
 proc insert*[T: SpatialObject](
     grid: var AHGrid[T], value: T
@@ -184,9 +193,12 @@ iterator items*[T](grid: AHGrid[T]): T =
 
 proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T]) =
   ## Removes a value
-  let index = grid.cells[handle.key].find(handle.obj)
-  if index >= 0:
-    grid.cells[handle.key].del(index)
+  try:
+    let index = grid.cells[handle.key].find(handle.obj)
+    if index >= 0:
+      grid.cells[handle.key].del(index)
+  except KeyError:
+    discard
 
 proc update*[T](grid: var AHGrid[T], handle: var GridHandle[T], space: SpatialObject) =
   ## Updates the spatial indexing for an object using the specified spatial information
