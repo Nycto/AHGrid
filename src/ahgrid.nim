@@ -170,7 +170,7 @@ iterator find*[T](grid: AHGrid[T], x1, y1, x2, y2: int32): T =
 
   for scale in grid.eachScale:
     for key in eachCellIndex(x1, y1, x2, y2, scale):
-      withValue(grid.cells, key, cell):
+      util.withValue(grid.cells, key, cell):
         for obj in cell:
           yield obj
 
