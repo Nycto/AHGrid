@@ -29,11 +29,11 @@ type
     ## A handle for a value that can be stored in a AHGrid -- used to update that value
     obj: T
     key: CellIndex
-    grid: ptr AHGrid[T]
+    grid: AHGrid[T]
 
   CellIndex = tuple[xBucket, yBucket, scale: int32]
 
-  AHGrid*[T] {.requiresInit.} = object ## A 2d spacial index
+  AHGrid*[T] = ref object ## A 2d spacial index
     maxScale, minScale: int32
     cells: Table[CellIndex, seq[T]]
 
@@ -43,7 +43,7 @@ proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T])
 
 proc `=destroy`[T](handle: var GridHandle[T]) =
   if handle.grid != nil:
-    handle.grid[].remove(handle)
+    handle.grid.remove(handle)
 
 proc hash*(x: CellIndex): Hash =
   return x.yBucket !& x.xBucket !& x.scale
@@ -57,8 +57,6 @@ proc newAHGrid*[T](
     maxScale: 0,
     cells: initTable[CellIndex, seq[T]](initialSize),
   )
-
-proc `=copy`*[T](a: var AHGrid[T], b: AHGrid[T]) {.error.}
 
 proc `$`(index: CellIndex): string =
   fmt"{index.xBucket}x{index.yBucket}x{index.scale}"
@@ -130,7 +128,7 @@ proc pickCellIndex(obj: SpatialObject, grid: AHGrid): CellIndex =
   ## Calculates the cell that an object should be stored in
   pickCellIndex(grid, obj.x, obj.y, max(obj.height, obj.width))
 
-proc insertAtKey[T](grid: var AHGrid[T], key: CellIndex, obj: T) =
+proc insertAtKey[T](grid: AHGrid[T], key: CellIndex, obj: T) =
   ## Inserts a value when the key is already known
   grid.maxScale = max(grid.maxScale, key.scale)
   grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
@@ -139,7 +137,7 @@ proc insert*[T](grid: var AHGrid[T], value: T, space: SpatialObject): GridHandle
   ## Add a value to this spacial grid
   let key = space.pickCellIndex(grid)
   insertAtKey(grid, key, value)
-  return GridHandle[T](key: key, obj: value, grid: addr grid)
+  return GridHandle[T](key: key, obj: value, grid: grid)
 
 proc insert*[T: SpatialObject](
     grid: var AHGrid[T], value: T
@@ -202,10 +200,10 @@ proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T]) =
 
 proc update*[T](handle: var GridHandle[T], space: SpatialObject) =
   ## Updates the spatial indexing for an object using the specified spatial information
-  let newKey = space.pickCellIndex(handle.grid[])
+  let newKey = space.pickCellIndex(handle.grid)
   if newKey != handle.key:
-    handle.grid[].remove(handle)
-    insertAtKey(handle.grid[], newKey, handle.obj)
+    handle.grid.remove(handle)
+    insertAtKey(handle.grid, newKey, handle.obj)
     handle.key = newKey
 
 proc update*[T: SpatialObject](handle: var GridHandle[T]) {.inline.} =
