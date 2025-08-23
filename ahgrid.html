@@ -54,7 +54,7 @@
   <details open>
     <summary><a class="reference reference-toplevel" href="#7" id="57">Types</a></summary>
     <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#AHGrid" title="AHGrid[T] {.requiresInit.} = object">AHGrid</a></li>
+      <li><a class="reference" href="#AHGrid" title="AHGrid[T] = ref object">AHGrid</a></li>
 <li><a class="reference" href="#GridHandle" title="GridHandle[T] = object">GridHandle</a></li>
 <li><a class="reference" href="#SpatialObject" title="SpatialObject = concept obj
     obj.x is int32
@@ -71,10 +71,6 @@
     <ul class="simple simple-toc-section">
       <ul class="simple nested-toc-section">$
   <li><a class="reference" href="#%24%2CAHGrid" title="`$`(grid: AHGrid): string">`$`(grid: AHGrid): string</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">=copy
-  <li><a class="reference" href="#%3Dcopy%2CAHGrid%5BT%5D%2CAHGrid%5BT%5D" title="`=copy`[T](a: var AHGrid[T]; b: AHGrid[T])">`=copy`[T](a: var AHGrid[T]; b: AHGrid[T])</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">clear
@@ -157,7 +153,7 @@
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
     <div id="AHGrid">
-  <dt><pre><a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span> {.<span class="Identifier">requiresInit</span>.} <span class="Other">=</span> <span class="Keyword">object</span></pre></dt>
+  <dt><pre><a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span></pre></dt>
   <dd>
     
     A 2d spacial index
@@ -193,17 +189,6 @@
     <div id="$-procs-all">
   <div id="$,AHGrid">
   <dt><pre><span class="Keyword">proc</span> <a href="#%24%2CAHGrid"><span class="Identifier">`$`</span></a><span class="Other">(</span><span class="Identifier">grid</span><span class="Other">:</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span></pre></dt>
-  <dd>
-    
-    
-    
-  </dd>
-</div>
-
-</div>
-<div id="=copy-procs-all">
-  <div id="=copy,AHGrid[T],AHGrid[T]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#%3Dcopy%2CAHGrid%5BT%5D%2CAHGrid%5BT%5D"><span class="Identifier">`=copy`</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">a</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">b</span><span class="Other">:</span> <a href="ahgrid.html#AHGrid"><span class="Identifier">AHGrid</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span> {.<span class="Identifier">error</span>.}</pre></dt>
   <dd>
     
     
@@ -343,7 +328,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2025-08-03 17:01:36 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2025-08-23 16:59:57 UTC</small>
       </div>
     </div>
   </div>
