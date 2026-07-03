@@ -89,15 +89,7 @@ proc chooseBucket(coord, scale: int32): int32 =
   assert(scale.isPowerOfTwo, "Scale must be a power of two")
 
   let half = scale div 2
-
-  # We need to specifically adjust the index to handle negative coordinates
-  let adjust =
-    if coord + half >= 0:
-      0'i32
-    else:
-      -scale + 1
-
-  result = (coord + half + adjust) div scale * scale - half
+  result = floorDiv(coord + half, scale) * scale - half
 
 proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
   ## Calculates the cell that a square falls into
