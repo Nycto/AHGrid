@@ -200,11 +200,17 @@ iterator items*[T](grid: AHGrid[T]): T =
 
 proc remove*[T](grid: AHGrid[T], handle: GridHandle[T]) =
   ## Removes a value
+  var emptied = false
   tables.withValue(grid.cells, handle.key, cell):
     let index = cell[].find(handle.obj)
     if index >= 0:
       cell[].del(index)
       grid.scaleCounts[handle.key.scale.countTrailingZeroBits] -= 1
+      emptied = cell[].len == 0
+
+  # Drop emptied cells so grids with moving objects don't grow without bound
+  if emptied:
+    grid.cells.del(handle.key)
 
 proc update*[T](handle: var GridHandle[T], space: SpatialObject) =
   ## Updates the spatial indexing for an object using the specified spatial information
