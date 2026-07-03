@@ -1,7 +1,7 @@
 ##
-## Spacial index that allows for querying of objects within a radius of a given point
+## Spatial index that allows for querying of objects within a radius of a given point
 ##
-## Details about the specific sof this algorithm can be found here:
+## Details about the specifics of this algorithm can be found here:
 ##
 ## https://elephantstarballoon.com/post/ahgrid/
 ##
@@ -27,14 +27,14 @@ type
     obj.height is int32
 
   GridHandle*[T] = object
-    ## A handle for a value that can be stored in a AHGrid -- used to update that value
+    ## A handle for a value that can be stored in an AHGrid -- used to update that value
     obj: T
     key: CellIndex
     grid: AHGrid[T]
 
   CellIndex = tuple[xBucket, yBucket, scale: int32]
 
-  AHGrid*[T] = ref object ## A 2d spacial index
+  AHGrid*[T] = ref object ## A 2d spatial index
     maxScale, minScale: int32
     scaleCounts: array[32, int32]
       ## Number of stored objects per scale, indexed by log2 of the scale.
@@ -84,7 +84,7 @@ proc `$`*(grid: AHGrid): string =
 proc chooseBucket(coord, scale: int32): int32 =
   ## Normalizes a coordinate onto a line where the only valid values are multiples of `scale`.
   ## This also offsets each coordinate by `scale/2` to ensure that an entity that falls on the edge of
-  ## its "best" cell won't fall into the edge on the net cell up
+  ## its "best" cell won't fall into the edge on the next cell up
   assert(scale > 0, "Scale must be greater than 0")
   assert(scale.isPowerOfTwo, "Scale must be a power of two")
 
@@ -138,7 +138,7 @@ proc insertAtKey[T](grid: AHGrid[T], key: CellIndex, obj: T) =
   grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
 
 proc insert*[T](grid: AHGrid[T], value: T, space: SpatialObject): GridHandle[T] =
-  ## Add a value to this spacial grid. The value is removed from the grid when the returned
+  ## Add a value to this spatial grid. The value is removed from the grid when the returned
   ## handle is destroyed, so the handle must be kept alive for as long as the value should
   ## remain stored.
   let key = space.pickCellIndex(grid)
@@ -148,7 +148,7 @@ proc insert*[T](grid: AHGrid[T], value: T, space: SpatialObject): GridHandle[T] 
 proc insert*[T: SpatialObject](
     grid: AHGrid[T], value: T
 ): GridHandle[T] {.inline.} =
-  ## Add a value to this spacial grid. The value is removed from the grid when the returned
+  ## Add a value to this spatial grid. The value is removed from the grid when the returned
   ## handle is destroyed, so the handle must be kept alive for as long as the value should
   ## remain stored.
   insert(grid, value, value)
