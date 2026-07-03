@@ -14,7 +14,7 @@ runnableExamples:
   for obj in grid.find(3, 4, 10):
     echo "Found object near point: ", obj
 
-import std/[tables, math, strformat, hashes], private/util
+import std/[tables, math, strformat, hashes, bitops], private/util
 
 type
   SpatialObject* = concept obj
@@ -34,6 +34,9 @@ type
 
   AHGrid*[T] = ref object ## A 2d spacial index
     maxScale, minScale: int32
+    scaleCounts: array[32, int32]
+      ## Number of stored objects per scale, indexed by log2 of the scale.
+      ## Lets searches skip scales that contain no objects.
     cells: Table[CellIndex, seq[T]]
 
 proc `=copy`[T](a: var GridHandle[T], b: GridHandle[T]) {.error.}
@@ -130,6 +133,7 @@ proc pickCellIndex(obj: SpatialObject, grid: AHGrid): CellIndex =
 proc insertAtKey[T](grid: AHGrid[T], key: CellIndex, obj: T) =
   ## Inserts a value when the key is already known
   grid.maxScale = max(grid.maxScale, key.scale)
+  grid.scaleCounts[key.scale.countTrailingZeroBits] += 1
   grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
 
 proc insert*[T](grid: var AHGrid[T], value: T, space: SpatialObject): GridHandle[T] =
@@ -145,10 +149,11 @@ proc insert*[T: SpatialObject](
   insert(grid, value, value)
 
 iterator eachScale(grid: AHGrid): int32 =
-  ## Yields each scale present in the grid
+  ## Yields each scale that contains at least one object
   var scale = grid.minScale
   while scale <= grid.maxScale:
-    yield scale
+    if grid.scaleCounts[scale.countTrailingZeroBits] > 0:
+      yield scale
     scale *= 2
 
 iterator eachCellIndex(x1, y1, x2, y2, scale: int32): CellIndex =
@@ -194,6 +199,7 @@ proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T]) =
     let index = grid.cells[handle.key].find(handle.obj)
     if index >= 0:
       grid.cells[handle.key].del(index)
+      grid.scaleCounts[handle.key.scale.countTrailingZeroBits] -= 1
   except KeyError:
     discard
 
@@ -213,4 +219,5 @@ proc clear*[T](grid: var AHGrid[T]) =
   ## Removes all values
   for cell in grid.cells.mvalues:
     cell.setLen(0)
+  grid.scaleCounts = default(typeof(grid.scaleCounts))
   grid.maxScale = 0
