@@ -8,8 +8,10 @@
 runnableExamples:
   var grid = newAHGrid[tuple[x, y, width, height: int32]]()
 
-  discard grid.insert((x: 1'i32, y: 2'i32, width: 3'i32, height: 4'i32))
-  discard grid.insert((x: 5'i32, y: 6'i32, width: 7'i32, height: 8'i32))
+  # The returned handles remove their value from the grid when destroyed,
+  # so they must stay alive for as long as the value should remain stored
+  let handle1 {.used.} = grid.insert((x: 1'i32, y: 2'i32, width: 3'i32, height: 4'i32))
+  let handle2 {.used.} = grid.insert((x: 5'i32, y: 6'i32, width: 7'i32, height: 8'i32))
 
   for obj in grid.find(3, 4, 10):
     echo "Found object near point: ", obj
@@ -137,7 +139,9 @@ proc insertAtKey[T](grid: AHGrid[T], key: CellIndex, obj: T) =
   grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
 
 proc insert*[T](grid: var AHGrid[T], value: T, space: SpatialObject): GridHandle[T] =
-  ## Add a value to this spacial grid
+  ## Add a value to this spacial grid. The value is removed from the grid when the returned
+  ## handle is destroyed, so the handle must be kept alive for as long as the value should
+  ## remain stored.
   let key = space.pickCellIndex(grid)
   insertAtKey(grid, key, value)
   return GridHandle[T](key: key, obj: value, grid: grid)
@@ -145,7 +149,9 @@ proc insert*[T](grid: var AHGrid[T], value: T, space: SpatialObject): GridHandle
 proc insert*[T: SpatialObject](
     grid: var AHGrid[T], value: T
 ): GridHandle[T] {.inline.} =
-  ## Add a value to this spacial grid
+  ## Add a value to this spacial grid. The value is removed from the grid when the returned
+  ## handle is destroyed, so the handle must be kept alive for as long as the value should
+  ## remain stored.
   insert(grid, value, value)
 
 iterator eachScale(grid: AHGrid): int32 =
