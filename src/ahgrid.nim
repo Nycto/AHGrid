@@ -95,7 +95,13 @@ proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
   ## Calculates the cell that a square falls into
   ## `x` and `y` are coordinates, `dimen` is the length of the side of the square
 
-  var scale = max(dimen.int.nextPowerOfTwo.int32, grid.minScale)
+  # The largest scale that fits in an int32; anything bigger can't be indexed
+  const scaleLimit = 1 shl 30
+
+  let initialScale = dimen.int.nextPowerOfTwo
+  assert(initialScale <= scaleLimit, "Object is too large to index: " & $dimen)
+
+  var scale = max(initialScale.int32, grid.minScale)
 
   while true:
     result =
@@ -106,6 +112,7 @@ proc pickCellIndex(grid: AHGrid, x, y, dimen: int32): CellIndex =
       break
 
     # If it doesn't fit, we need to try the next scale up
+    assert(scale < scaleLimit, "Object can not be indexed: " & $((x, y, dimen)))
     scale = scale * 2
 
   # The resulting cell should completely contain the object being stored
