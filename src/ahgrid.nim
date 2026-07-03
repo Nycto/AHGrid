@@ -145,9 +145,7 @@ proc insert*[T](grid: AHGrid[T], value: T, space: SpatialObject): GridHandle[T] 
   insertAtKey(grid, key, value)
   return GridHandle[T](key: key, obj: value, grid: grid)
 
-proc insert*[T: SpatialObject](
-    grid: AHGrid[T], value: T
-): GridHandle[T] {.inline.} =
+proc insert*[T: SpatialObject](grid: AHGrid[T], value: T): GridHandle[T] {.inline.} =
   ## Add a value to this spatial grid. The value is removed from the grid when the returned
   ## handle is destroyed, so the handle must be kept alive for as long as the value should
   ## remain stored.
