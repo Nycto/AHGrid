@@ -162,6 +162,18 @@ suite "Adaptive Hashing Grid":
 
     check(grid.find(15, 15, 10).toSeq == @["Trees"])
 
+  test "Every stored object is findable":
+    # Guards against lookups missing entries stored at internal table index 0
+    var grid = newAHGrid[GameObject]()
+    var objs: seq[GameObject]
+    var handles: seq[GridHandle[GameObject]]
+    for i in 0'i32 ..< 200:
+      objs.add obj("obj" & $i, i * 16, i * 16, 3, 3)
+      handles.add grid.insert(objs[^1])
+
+    for o in objs:
+      check(grid.find(o.x, o.y, 5).toSeq.contains(o))
+
   test "Destroying a handle should delete a value":
     var grid = newAHGrid[GameObject]()
     block:

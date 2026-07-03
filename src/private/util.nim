@@ -9,6 +9,6 @@ template withValue*[K, V](table: Table[K, V], key: K, value, body: untyped) =
   privateAccess(Table)
   var hc: Hash
   var index = rawGet(table, key, hc)
-  if index > 0:
+  if index >= 0:
     let value {.cursor.} = table.data[index].val
     body
