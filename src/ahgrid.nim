@@ -17,13 +17,12 @@ runnableExamples:
 import std/[tables, math, strformat, hashes], private/util
 
 type
-  SpatialObject* =
-    concept obj
-        ## A value that can be stored in a 2d AHGrid
-        obj.x is int32
-        obj.y is int32
-        obj.width is int32
-        obj.height is int32
+  SpatialObject* = concept obj
+    ## A value that can be stored in a 2d AHGrid
+    obj.x is int32
+    obj.y is int32
+    obj.width is int32
+    obj.height is int32
 
   GridHandle*[T] = object
     ## A handle for a value that can be stored in a AHGrid -- used to update that value
