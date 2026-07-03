@@ -186,7 +186,7 @@ iterator find*[T](grid: AHGrid[T], x1, y1, x2, y2: int32): T =
         searchSpace += 1
 
   when defined(logSearchSpace):
-    echo "Search space: ", searchSpace, " at ", x, ", ", y, " with radius ", radius
+    echo "Search space: ", searchSpace, " for rectangle ", (x1, y1), " to ", (x2, y2)
 
 iterator find*[T](grid: AHGrid[T], x, y, radius: int32): T =
   ## Finds all the values that are approximately within a given radius of a point
