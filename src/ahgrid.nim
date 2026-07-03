@@ -50,7 +50,7 @@ proc `=destroy`[T](handle: var GridHandle[T]) =
     handle.grid.remove(handle)
 
 proc hash*(x: CellIndex): Hash =
-  return x.yBucket !& x.xBucket !& x.scale
+  return !$(hash(x.xBucket) !& hash(x.yBucket) !& hash(x.scale))
 
 proc newAHGrid*[T](
     initialSize: Positive = defaultInitialSize, minCellSize: int32 = 2
