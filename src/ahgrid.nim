@@ -43,7 +43,7 @@ type
 
 proc `=copy`[T](a: var GridHandle[T], b: GridHandle[T]) {.error.}
 
-proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T])
+proc remove*[T](grid: AHGrid[T], handle: GridHandle[T])
 
 proc `=destroy`[T](handle: var GridHandle[T]) =
   if handle.grid != nil:
@@ -138,7 +138,7 @@ proc insertAtKey[T](grid: AHGrid[T], key: CellIndex, obj: T) =
   grid.scaleCounts[key.scale.countTrailingZeroBits] += 1
   grid.cells.mgetOrPut(key, newSeq[T]()).add(obj)
 
-proc insert*[T](grid: var AHGrid[T], value: T, space: SpatialObject): GridHandle[T] =
+proc insert*[T](grid: AHGrid[T], value: T, space: SpatialObject): GridHandle[T] =
   ## Add a value to this spacial grid. The value is removed from the grid when the returned
   ## handle is destroyed, so the handle must be kept alive for as long as the value should
   ## remain stored.
@@ -147,7 +147,7 @@ proc insert*[T](grid: var AHGrid[T], value: T, space: SpatialObject): GridHandle
   return GridHandle[T](key: key, obj: value, grid: grid)
 
 proc insert*[T: SpatialObject](
-    grid: var AHGrid[T], value: T
+    grid: AHGrid[T], value: T
 ): GridHandle[T] {.inline.} =
   ## Add a value to this spacial grid. The value is removed from the grid when the returned
   ## handle is destroyed, so the handle must be kept alive for as long as the value should
@@ -199,7 +199,7 @@ iterator items*[T](grid: AHGrid[T]): T =
     for obj in cell:
       yield obj
 
-proc remove*[T](grid: var AHGrid[T], handle: GridHandle[T]) =
+proc remove*[T](grid: AHGrid[T], handle: GridHandle[T]) =
   ## Removes a value
   tables.withValue(grid.cells, handle.key, cell):
     let index = cell[].find(handle.obj)
@@ -219,7 +219,7 @@ proc update*[T: SpatialObject](handle: var GridHandle[T]) {.inline.} =
   ## Updates the spatial indexing for an object
   update(handle, handle.obj)
 
-proc clear*[T](grid: var AHGrid[T]) =
+proc clear*[T](grid: AHGrid[T]) =
   ## Removes all values
   for cell in grid.cells.mvalues:
     cell.setLen(0)
