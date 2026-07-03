@@ -25,8 +25,9 @@ while num <= maxTestCount:
       timeIt fmt"{num} entries, spread over {spread} -- querying at {dist} distance",
         100:
         var space = newAHGrid[Entry](num * 3, dist * 10)
+        var handles = newSeqOfCap[GridHandle[Entry]](entries.len)
         for e in entries:
-          discard space.insert(e)
+          handles.add space.insert(e)
 
         for me in entries:
           for other in space.find(me.x, me.y, dist):
