@@ -49,8 +49,18 @@ proc `=destroy`[T](handle: var GridHandle[T]) =
   if handle.grid != nil:
     handle.grid.remove(handle)
 
-proc hash*(x: CellIndex): Hash =
-  return !$(hash(x.xBucket) !& hash(x.yBucket) !& hash(x.scale))
+proc hash*(x: CellIndex): Hash {.inline.} =
+  # A cheap mix of the cell's column, row and scale. The std `hash(int32)` uses
+  # 64-bit multiplies, which are slow on 32-bit targets
+  let level = x.scale.countTrailingZeroBits.int32
+  let half = x.scale shr 1
+  # Buckets are spaced `scale` apart, so dividing it out keeps the low bits of
+  # neighbouring cells distinct
+  let col = cast[uint32]((x.xBucket + half) shr level)
+  let row = cast[uint32]((x.yBucket + half) shr level)
+  let mixed =
+    col * 0x9E3779B1'u32 + row * 0x85EBCA77'u32 + level.uint32 * 0xC2B2AE3D'u32
+  return cast[Hash]((mixed xor (mixed shr 16)).uint)
 
 proc newAHGrid*[T](
     initialSize: Positive = defaultInitialSize, minCellSize: int32 = 2

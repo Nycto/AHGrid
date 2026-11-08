@@ -103,7 +103,7 @@ suite "Adaptive Hashing Grid":
 
     check(
       $grid ==
-        """AHGrid(100x100x8: @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], 16x16x32: @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], 4x4x8: @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], )"""
+        """AHGrid(100x100x8: @[(name: "Bush", x: 100, y: 100, width: 5, height: 5)], 4x4x8: @[(name: "Rock", x: 5, y: 5, width: 3, height: 3)], 16x16x32: @[(name: "Tree", x: 20, y: 20, width: 15, height: 15)], )"""
     )
 
   test "Changing the minimum cell size":
